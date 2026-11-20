@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IIT Delhi Campus Wayfinding</title>
+<style>/* essential map-library styles, built in so the page works even where the library stylesheet is blocked */
+.maplibregl-map{overflow:hidden;position:relative;-webkit-tap-highlight-color:transparent}
+.maplibregl-canvas{position:absolute;left:0;top:0}
+.maplibregl-canvas-container.maplibregl-interactive{cursor:grab}
+.maplibregl-marker{position:absolute;top:0;left:0;will-change:transform}
+.maplibregl-ctrl-top-right,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-bottom-left{position:absolute;pointer-events:none;z-index:2}
+.maplibregl-ctrl-top-right{top:0;right:0}.maplibregl-ctrl-bottom-right{bottom:0;right:0}.maplibregl-ctrl-top-left{top:0;left:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}
+.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}
+.maplibregl-ctrl-top-right .maplibregl-ctrl{float:right;margin:10px 10px 0 0}
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl{float:right;margin:0 10px 10px 0}
+.maplibregl-ctrl-group{background:#262626;border-radius:10px;box-shadow:0 2px 10px #0005;overflow:hidden}
+.maplibregl-ctrl-group button{width:44px;height:44px;display:block;padding:0;border:0;background:transparent;cursor:pointer;color:#fff}
+.maplibregl-ctrl-group button+button{border-top:1px solid #444}
+.maplibregl-ctrl-icon{display:block;width:100%;height:100%;font:700 24px/44px 'IBM Plex Sans',sans-serif;text-align:center}
+.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon::before{content:'+'}
+.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon::before{content:'\2212'}
+.maplibregl-ctrl-scale{background:rgba(255,255,255,.8);border:2px solid #333;border-top:none;font-size:11px;padding:0 5px;color:#333}
+.maplibregl-ctrl-attrib{background:rgba(255,255,255,.7);padding:0 5px;font-size:11px;color:#333}
+.maplibregl-ctrl-attrib a{color:#333}
+.maplibregl-ctrl-attrib-button{display:none}
+.maplibregl-ctrl-compass .maplibregl-ctrl-icon::before{content:'N';font-size:16px}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Web stand-ins for your artwork fonts, used only where Hyperlegible Sans / Kohinoor Devanagari aren't installed -->
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Hind:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="map" aria-label="IIT Delhi campus map"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol><symbol id="i-chair" viewBox="0 0 24 24"><circle cx="10" cy="4.5" r="1.6"/><path d="M10 8v7h5l3 5M10 11.5h5.5"/><path d="M7.5 12.5a5.5 5.5 0 1 0 7 8.2"/></symbol><symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V5M5.5 11.5L12 5l6.5 6.5"/></symbol><symbol id="i-left" viewBox="0 0 24 24"><path d="M19 20v-7a4 4 0 0 0-4-4H6M10.5 4.5L5 9l5.5 4.5"/></symbol><symbol id="i-right" viewBox="0 0 24 24"><path d="M5 20v-7a4 4 0 0 1 4-4h9M13.5 4.5L19 9l-5.5 4.5"/></symbol><symbol id="i-steep" viewBox="0 0 24 24"><path d="M3 20h18M5 16L17 6M10 5.5h7.5V13"/></symbol><symbol id="i-road" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></symbol><symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4M6 4h11l-2.5 4 2.5 4H6"/></symbol><symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/></symbol><symbol id="i-stairs" viewBox="0 0 24 24"><path d="M3 20h5v-5h5v-5h5V5h3"/></symbol><symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></symbol><symbol id="i-voice" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></symbol><symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></symbol><symbol id="i-building" viewBox="0 0 24 24"><path d="M5 21V4h9v17M14 9h5v12M3 21h18M8.5 8h2M8.5 12h2M8.5 16h2"/></symbol><symbol id="i-hall" viewBox="0 0 24 24"><path d="M3 20h18M5 20v-8M9 20v-8M15 20v-8M19 20v-8M3 12l9-7 9 7z"/></symbol><symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></symbol><symbol id="i-access" viewBox="0 0 24 24"><circle cx="12" cy="4" r="1.8"/><path d="M5 8h14M12 8v6M8 21l4-7 4 7"/></symbol><symbol id="i-parking" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M10 16V8h3a2.5 2.5 0 0 1 0 5h-3"/></symbol></defs></svg>
+<div class="topbar">
+  <button class="chipb" data-act="layer" data-v="accessibility" aria-pressed="false"><svg class="ic sm"><use href="#i-access"/></svg>Accessibility</button>
+  <button class="chipb" data-act="layer" data-v="parking" aria-pressed="false"><svg class="ic sm"><use href="#i-parking"/></svg>Parking</button>
+  <button class="chipb icon" data-act="settings" aria-label="Map tools"><svg class="ic sm"><use href="#i-gear"/></svg></button>
+</div>
+<div class="navcard" id="navcard" hidden role="status" aria-live="polite"></div>
+<button class="fab" id="recenter" data-act="recenter" hidden aria-label="Back to my position"><svg class="ic"><use href="#i-target"/></svg></button>
+<div class="toast" id="toast" hidden role="alert"></div>
+<section class="sheet" id="sheet" aria-live="polite"></section>
+<div class="modal" id="fromModal" hidden><div class="mpanel" id="panelFrom"></div></div>
+
+
+<section class="panel" id="panel" aria-label="Map tools" hidden>
+  <div class="ph2"><h2>Map tools (for the design team)</h2><button class="x" data-act="settings" aria-label="Close tools">✕</button></div>
+  <h2 class="ph">Campus map</h2>
+  <div class="row">
+    <span class="label">View</span>
+    <div class="seg" role="radiogroup" aria-label="Map view">
+      <button role="radio" aria-checked="true" data-view="standard">Standard</button>
+      <button role="radio" aria-checked="false" data-view="accessibility">Accessibility</button>
+      <button role="radio" aria-checked="false" data-view="parking">Parking</button>
+    </div>
+  </div>
+  <div class="row">
+    <span class="label">Map up</span>
+    <div class="seg" role="radiogroup" aria-label="Map orientation">
+      <button role="radio" aria-checked="true" data-orient="artwork">As drawn</button>
+      <button role="radio" aria-checked="false" data-orient="north">North</button>
+    </div>
+    <button class="btn ghost" id="fitCampus">Whole campus</button>
+  </div>
+  <div class="row"><span class="label">Turn map</span><input type="range" id="turn" min="-180" max="180" step="1" value="0" aria-label="Turn the map (test)"><code id="turnVal">0°</code></div>
+  <div class="row"><span class="label">Artwork</span><input type="range" id="opacity" min="0" max="100" aria-label="Artwork opacity"></div>
+  <div class="row"><label class="toggle"><input type="checkbox" id="showChecks"> Show my check points (orange)</label></div>
+  <details class="fine">
+    <summary>Fine-tune alignment</summary>
+    <div class="grid">
+      <button class="nb" data-nudge="n" aria-label="Move north">N ↑</button>
+      <button class="nb" data-nudge="s" aria-label="Move south">S ↓</button>
+      <button class="nb" data-nudge="w" aria-label="Move west">W ←</button>
+      <button class="nb" data-nudge="e" aria-label="Move east">E →</button>
+      <button class="nb" data-nudge="rl" aria-label="Rotate anticlockwise">⟲</button>
+      <button class="nb" data-nudge="rr" aria-label="Rotate clockwise">⟳</button>
+      <button class="nb" data-nudge="sm" aria-label="Smaller">−</button>
+      <button class="nb" data-nudge="sp" aria-label="Larger">+</button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="bigSteps"> Big steps (5 m, 1.25°, 2.5%)</label>
+    <p class="msg" id="adjustVals">E 0 m · N 0 m · rotate 0.00° · scale 100.0%</p>
+    <div class="row"><button class="btn" id="copyAlign">Copy alignment</button><button class="btn ghost" data-nudge="reset">Reset</button></div>
+  </details>
+  <p class="msg" id="alignInfo"></p>
+  <h2 class="ph">Base map</h2>
+  <div class="row">
+    <span class="label">Style</span>
+    <div class="seg" role="radiogroup" aria-label="Base map style">
+      <button role="radio" aria-checked="true" data-style="campus">Campus style</button>
+      <button role="radio" aria-checked="false" data-style="osm">Standard OSM</button>
+    </div>
+  </div>
+  <div class="row">
+    <span class="label">Pointer</span>
+    <code id="coords">move or tap the map</code>
+  </div>
+  <div class="row">
+    <label class="toggle"><input type="checkbox" id="pickMode"> Record control points (for Step 2)</label>
+  </div>
+  <ol id="points" class="points" aria-label="Recorded points"></ol>
+  <div class="row" id="pointActions" hidden>
+    <button class="btn" id="copyPoints">Copy points</button>
+    <button class="btn ghost" id="clearPoints">Clear</button>
+  </div>
+  <p class="msg" id="msg" role="status"></p>
+</section>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="js/config.js"></script>
+<script src="js/map.js"></script>
+<script src="data/artwork-svg.js"></script>
+<script src="js/artwork.js"></script>
+<script src="data/routes.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
