@@ -212,7 +212,8 @@
   function setView(v) {
     S.view = v; const btn = document.querySelector(`[data-view="${v}"]`); if (btn) btn.click();
     document.querySelectorAll('[data-act=view]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === v)));
-    $('#layersBtn').classList.toggle('on', v !== 'standard'); $('#layersMenu').hidden = true; $('#layersBtn').setAttribute('aria-expanded', 'false');
+    $('#layersBtn').classList.toggle('on', v !== 'standard'); $('#layersMenu').hidden = true;
+    const ab = $('#accessBtn'); ab.classList.toggle('on', v === 'accessibility'); ab.setAttribute('aria-pressed', String(v === 'accessibility')); $('#layersBtn').setAttribute('aria-expanded', 'false');
   }
 
   // ---------------------------------------------------------------- screens
@@ -248,7 +249,7 @@
         <div class="srchrow"><button class="x" data-act="closeSearch" aria-label="Close search">${I('back')}</button>
           <div class="srch">${I('search')}<input id="q" type="search" placeholder="Where to?" aria-label="Search a building or place" autocomplete="off" value="${esc(S.q)}"></div></div>
         <p class="here">From <button class="link" data-act="from" aria-label="From ${START[S.from].name}. Change starting point">${START[S.from].name}</button></p>
-        <div class="cats" role="group" aria-label="Type of place">${CATS.map(c => `<button class="cat" data-act="cat" data-v="${c}" aria-pressed="${S.cat === c}">${I(CI[c] || 'building')}<span>${c === 'All' ? 'All places' : c}</span></button>`).join('')}</div>
+        <div class="cats" role="group" aria-label="Type of place">${CATS.map(c => `<button class="cat" data-act="cat" data-v="${c}" aria-pressed="${S.cat === c}"><span>${c}</span></button>`).join('')}</div>
         <h2 class="lh">${S.cat === 'All' ? 'Places' : esc(S.cat)}</h2>
         <ul class="list" id="results" aria-label="Places">${results()}</ul>`;
     } else if (S.screen === 'preview') {
@@ -275,9 +276,9 @@
       updateNav(true);
     } else if (S.screen === 'arrived') {
       const R = S.R;
-      sh.innerHTML = `<div class="grab" aria-hidden="true"></div><h1 tabindex="-1">You have arrived</h1>
-        <p class="arr"><b>${esc(R.destName)}</b><br>${R.steps ? 'Main entrance – 7 steps.' : 'Ramp entrance – step-free.'}</p>
-        <div class="ctl"><button class="go sec" data-act="again">Route again</button><button class="go" data-act="done">Done</button></div>`;
+      sh.innerHTML = `<div class="grab" aria-hidden="true"></div><div class="arrok" aria-hidden="true">${I('check')}</div><h1 tabindex="-1">You've arrived</h1>
+        <p class="arr"><b>${esc(R.destName)}</b><br>${R.steps ? 'Use the main entrance ahead of you – it has 7 steps.' : 'Use the wheelchair accessible ramp ahead of you to enter the building.'}</p>
+        <button class="go wide" data-act="done">Done</button><button class="more" data-act="another">Plan another route</button>`;
     }
     document.documentElement.style.setProperty('--sheet-h', sheetH() + 'px');
     placeMarkers(); updateCompass();
@@ -402,6 +403,8 @@
     else if (a === 'done') { home(); if (S.orient === 'drawn') map.easeTo({ bearing: drawnBearing(), duration: dur(500) }); }
     else if (a === 'compass') compassTap();
     else if (a === 'key') openKey();
+    else if (a === 'access') setView(S.view === 'accessibility' ? 'standard' : 'accessibility');
+    else if (a === 'another') { home(); S.homeOpen = true; render(); const q = $('#q'); if (q) q.focus(); }
     else if (a === 'closeKey') $('#keyModal').hidden = true;
     else if (a === 'layers') { const m = $('#layersMenu'); m.hidden = !m.hidden; t.setAttribute('aria-expanded', String(!m.hidden)); e.stopPropagation(); }
     else if (a === 'view') setView(t.dataset.v);

@@ -213,4 +213,16 @@ body[data-screen=nav] .edge #layersBtn{display:none}
 .cat[aria-pressed=true]{background:#fff;color:#262626;border-color:#fff}
 .lh{font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:#BDBDBD;margin:14px 0 2px}
 .sheet.home.mini{background:#262626}
-body.searching .edge{display:none}
+/* Figma v2 tweaks: narrower centred search bar, pill rail for place types, half-height search panel */
+.sheet.home.mini{left:50%;right:auto;transform:translateX(-50%);width:min(300px,calc(100% - 24px))}
+.sheet.home.open{max-height:52vh;max-height:52dvh;height:52vh;height:52dvh}
+.cats{display:flex;grid-template-columns:none;gap:8px;overflow-x:auto;scrollbar-width:none;margin:4px -20px 2px;padding:0 20px;scroll-padding:0 20px}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex:0 0 auto;flex-direction:row;min-height:44px;min-width:96px;border-radius:999px;padding:0 18px;font-size:15px;border-width:1.5px}
+.arrok{width:64px;height:64px;border-radius:50%;background:#3AA655;display:grid;place-items:center;margin:4px auto 6px}
+.arrok .ic{width:34px;height:34px;stroke:#fff}
+.sheet .arr{text-align:center;line-height:1.45;color:#CFCFCF}
+body[data-screen=arrived] .sheet h1{text-align:center}
+.go.wide{width:100%}
+body[data-screen=arrived] .more{display:block;margin:8px auto 0;color:#7FD3F5;text-decoration:none}
+.go.wide{margin-top:8px}
