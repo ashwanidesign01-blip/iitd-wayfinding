@@ -21,7 +21,8 @@
     { id: 'Textile Building', cat: 'Academic' }, { id: 'Synergy Building', cat: 'Academic' }, { id: 'Bharti School', cat: 'Academic' },
     { id: 'IIT Hospital', cat: 'Medical' }, { id: 'Zanskar Hostel', cat: 'Hostels' }, { id: 'SAC Complex', cat: 'Sports & culture' }
   ].map(d => ({ name: d.name || d.id, al: '', ready: false, ...d }));
-  const CATS = ['All', ...new Set(DEST.map(d => d.cat))];
+  const CATS = ['All', 'Offices', 'Academic', 'Medical', 'Hostels', 'Sports & culture'];
+  const CI = { Academic: 'hall', Offices: 'building', Medical: 'cross', Hostels: 'bed', 'Sports & culture': 'ball' };
   const store = { get(k, d) { try { const v = localStorage.getItem('iitd.' + k); return v == null ? d : v; } catch (e) { return d; } },
                   set(k, v) { try { localStorage.setItem('iitd.' + k, v); } catch (e) {} } };
   const S = { screen: 'home', from: 'gate', to: null, prof: store.get('prof', 'wheelchair'), R: null, pos: 0, play: false, mult: 8,
@@ -244,13 +245,12 @@
     } else if (S.screen === 'home') {
       sh.className = 'sheet home open';
       const counts = {}; DEST.forEach(d => counts[d.cat] = (counts[d.cat] || 0) + 1);
-      const CI = { All: 'search', Academic: 'hall', Offices: 'building', Medical: 'cross', Hostels: 'bed', 'Sports & culture': 'ball' };
       sh.innerHTML = `<div class="grab" aria-hidden="true"></div>
         <div class="srchrow"><button class="x" data-act="closeSearch" aria-label="Close search">${I('back')}</button>
-          <div class="srch">${I('search')}<input id="q" type="search" placeholder="Where to?" aria-label="Search a building or place" autocomplete="off" value="${esc(S.q)}"></div></div>
-        <p class="here">From <button class="link" data-act="from" aria-label="From ${START[S.from].name}. Change starting point">${START[S.from].name}</button></p>
+          <div class="srch">${I('search')}<input id="q" type="search" placeholder="Search a building or place" aria-label="Search a building or place" autocomplete="off" value="${esc(S.q)}"></div></div>
+        <p class="here">From <button class="link" data-act="from" aria-label="From ${START[S.from].name}. Change starting point"><b>${START[S.from].name}</b> <span class="chg">· Change</span></button></p>
         <div class="cats" role="group" aria-label="Type of place">${CATS.map(c => `<button class="cat" data-act="cat" data-v="${c}" aria-pressed="${S.cat === c}"><span>${c}</span></button>`).join('')}</div>
-        <h2 class="lh">${S.cat === 'All' ? 'Places' : esc(S.cat)}</h2>
+        <h2 class="lh">${S.cat === 'All' ? 'All places' : esc(S.cat)}</h2>
         <ul class="list" id="results" aria-label="Places">${results()}</ul>`;
     } else if (S.screen === 'preview') {
       const R = S.R;
@@ -290,10 +290,9 @@
       .sort((a, b) => b.ready - a.ready);
     if (!list.length) return `<li class="empty">No place matches “${esc(S.q)}”.</li>`;
     return list.map(d => {
-      if (!d.ready) return `<li><div class="item off" aria-label="${esc(d.name)}, directions coming soon"><span class="badge">${I('building')}</span><span><span class="nm">${esc(d.name)}</span><span class="sb">${d.cat} · Directions coming soon</span></span></div></li>`;
+      if (!d.ready) return `<li><div class="item off" aria-label="${esc(d.name)}, directions coming soon"><span class="badge">${I(CI[d.cat] || 'building')}</span><span><span class="nm">${esc(d.name)}</span><span class="sb">${d.cat} · Directions coming soon</span></span></div></li>`;
       const r = buildRoute(S.prof, S.from, d.id);
-      return `<li><button class="item" data-act="pick" data-id="${d.id}" aria-label="${esc(d.name)}, ${fmtT(r.total, S.prof)}, ${fmtM(r.total)}"><span class="badge">${I('hall')}</span><span><span class="nm">${esc(d.name)}</span><span class="sb">${d.cat}</span></span>
-        <span class="eta">${fmtT(r.total, S.prof)}<small>${fmtM(r.total)}</small></span></button></li>`;
+      return `<li><button class="item" data-act="pick" data-id="${d.id}" aria-label="${esc(d.name)}, ${fmtT(r.total, S.prof)}, ${fmtM(r.total)}"><span class="badge ready">${I(CI[d.cat] || 'building')}</span><span><span class="nm">${esc(d.name)}</span><span class="sb ok">${d.cat} · Directions ready</span></span></button></li>`;
     }).join('');
   }
 
@@ -385,7 +384,7 @@
     if (a === 'pick') pick(t.dataset.id);
     else if (a === 'openSearch') { S.homeOpen = true; render(); const q = $('#q'); if (q) q.focus(); }
     else if (a === 'closeSearch') { S.homeOpen = false; S.q = ''; S.cat = 'All'; render(); camHome(true); }
-    else if (a === 'cat') { S.cat = t.dataset.v; document.querySelectorAll('[data-act=cat]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.cat))); $('#results').innerHTML = results(); $('.lh').textContent = S.cat === 'All' ? 'Places' : S.cat; }
+    else if (a === 'cat') { S.cat = t.dataset.v; document.querySelectorAll('[data-act=cat]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.cat))); $('#results').innerHTML = results(); $('.lh').textContent = S.cat === 'All' ? 'All places' : S.cat; }
     else if (a === 'close') home();
     else if (a === 'from') openFrom();
     else if (a === 'closeFrom') $('#fromModal').hidden = true;
