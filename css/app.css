@@ -261,3 +261,28 @@ body.searching .scrim{display:block}
 .sheet.home.open .item .sb{font-size:13px;color:#A8A8A8}
 .sheet.home.open .item .sb.ok{color:#7FD3F5}
 body.searching .edge{bottom:calc(50.4vh + 19px);bottom:calc(50.4dvh + 19px)}
+
+/* Figma 03 Route preview (ready for dev) */
+.sheet.preview{padding:16px 20px calc(27px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;display:flex;flex-direction:column;gap:14px}
+.sheet.preview>*{flex:none;margin:0}
+.sheet.preview .grab{width:40px;background:#5A5A5A;margin:0 auto}
+.sheet.preview .titlerow{display:flex;align-items:center;gap:10px}
+.sheet.preview .tt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;align-items:flex-start}
+.sheet.preview h1{font-size:22px;font-weight:700;line-height:29px;margin:0}
+.sheet.preview .fromlink{border:0;background:none;padding:0;color:#A8A8A8;font:400 14px/18px 'IBM Plex Sans',sans-serif;cursor:pointer;text-align:left}
+.sheet.preview .titlerow .x{width:44px;height:44px;border-radius:50%;background:#3F3F3F}
+.sheet.preview .seg2{display:flex;background:#3F3F3F;border-radius:999px;padding:4px;gap:0;margin:0}
+.sheet.preview .seg2 button{flex:1;height:44px;min-height:44px;border:0;border-radius:999px;background:transparent;color:#fff;font:600 16px 'IBM Plex Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.sheet.preview .seg2 button[aria-checked=true]{background:#fff;color:#262626}
+.sheet.preview .seg2 .ic{width:24px;height:24px}
+.sheet.preview .big{display:flex;align-items:baseline;gap:10px;font-size:32px;font-weight:700;line-height:42px;margin:0}
+.sheet.preview .big small{font-size:17px;font-weight:400;color:#CFCFCF;margin:0}
+.sheet.preview .strip{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.sheet.preview .strip li{display:inline-flex;align-items:center;gap:6px;height:28px;padding:5px 12px 5px 9px;border-radius:999px;font-size:14px;font-weight:600;line-height:18px}
+.sheet.preview .strip li .ic{width:18px;height:18px}
+.sheet.preview .strip li.ok{background:#1F3B2A;color:#B9F5C9}
+.sheet.preview .strip li.warn{background:#4A3410;color:#FFD9A0}
+.sheet.preview .strip li.alert{background:#4A1414;color:#FFC2C2}
+.sheet.preview .go{width:100%;min-height:64px;border-radius:4px;font-size:22px;font-weight:700}
+.sheet.preview .more{align-self:flex-start;color:#7FD3F5;text-decoration:none;font-size:15px;font-weight:600;min-height:20px;margin:0}
+body[data-screen=preview] .edge{bottom:calc(var(--sheet-h) + 19px)}

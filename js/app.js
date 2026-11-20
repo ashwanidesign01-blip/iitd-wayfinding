@@ -229,8 +229,8 @@
       c.push(['check', 'No steps', 'ok']);
       if (R.by.steep) c.push(['steep', `Steep ${Math.round(R.by.steep / 5) * 5} m`, 'warn']);
       if (R.by.road) c.push(['road', `Road ${Math.round(R.by.road / 10) * 10} m`, 'alert']);
-      c.push(['chair', 'Ramp entrance', 'ok']);
-    } else c.push(['stairs', 'Entrance: 7 steps', 'warn']);
+      if (!R.by.road) c.push(['chair', 'Footpath all the way', 'ok']);
+    } else { c.push(['walk', 'Footpath all the way', 'ok']); c.push(['stairs', 'Entrance: 7 steps', 'warn']); }
     return `<ul class="strip" aria-label="On this route">${c.map(([i, t, k]) => `<li class="${k}">${I(i, 'sm')}${t}</li>`).join('')}</ul>`;
   }
   let lastScreen = null;
@@ -238,7 +238,7 @@
     document.body.dataset.screen = S.screen; document.body.classList.toggle('searching', S.screen === 'home' && S.homeOpen);
     const sh = $('#sheet'); sh.className = 'sheet ' + S.screen;
     $('#navcard').hidden = S.screen !== 'nav';
-    $('#recenter').hidden = !((S.screen === 'nav' && !S.follow) || S.screen === 'home');
+    $('#recenter').hidden = !((S.screen === 'nav' && !S.follow) || S.screen === 'home' || S.screen === 'preview');
     if (S.screen === 'home' && !S.homeOpen) {
       sh.className = 'sheet home mini';
       sh.innerHTML = `<h1 class="sr">Where to?</h1><button class="pillsearch" data-act="openSearch" aria-label="Where to? Search a building or place">${I('search')}<span>Where to?</span></button>`;
@@ -255,14 +255,13 @@
     } else if (S.screen === 'preview') {
       const R = S.R;
       sh.innerHTML = `<div class="grab" aria-hidden="true"></div>
-        <div class="titlerow"><h1 tabindex="-1">${esc(R.destName)}</h1><button class="x" data-act="close" aria-label="Close and choose another place">${I('close')}</button></div>
-        <div class="fromrow"><span>From</span><button class="pill" data-act="from" aria-label="From ${START[S.from].name}. Change starting point">${START[S.from].name}</button></div>
+        <div class="titlerow"><div class="tt"><h1 tabindex="-1">${esc(R.destName)}</h1><button class="fromlink" data-act="from" aria-label="From ${START[S.from].name}. Change starting point">From ${START[S.from].name}</button></div><button class="x" data-act="close" aria-label="Close and choose another place">${I('close')}</button></div>
         <div class="seg2" role="radiogroup" aria-label="How are you travelling?">
-          <button role="radio" aria-checked="${S.prof === 'wheelchair'}" data-act="prof" data-v="wheelchair">${I('chair', 'sm')}Wheelchair</button>
-          <button role="radio" aria-checked="${S.prof === 'pedestrian'}" data-act="prof" data-v="pedestrian">${I('walk', 'sm')}Walking</button></div>
+          <button role="radio" aria-checked="${S.prof === 'wheelchair'}" data-act="prof" data-v="wheelchair">${I('chair')}Wheelchair</button>
+          <button role="radio" aria-checked="${S.prof === 'pedestrian'}" data-act="prof" data-v="pedestrian">${I('walk')}Walking</button></div>
+        <p class="big">${fmtT(R.total, S.prof)}<small>${fmtM(R.total)}${S.prof === 'wheelchair' ? ' · step-free' : ''}</small></p>
         ${strip(R)}
-        <div class="res"><div class="big">${fmtT(R.total, S.prof)}<small>${fmtM(R.total)}</small></div>
-          <button class="go" data-act="go" aria-label="Go. Start directions to ${esc(R.destName)}">Go</button></div>
+        <button class="go" data-act="go" aria-label="Start directions to ${esc(R.destName)}">Start</button>
         <button class="more" data-act="steps" aria-expanded="${S.allSteps}">${S.allSteps ? 'Hide steps' : `See all ${R.list.length} steps`}</button>
         ${S.allSteps ? `<ol class="dirs" aria-label="Directions">${R.list.map(s => `<li><span class="di di-${s.icon}" aria-hidden="true">${I(icon(s.icon))}</span><span><b>${esc(s.text)}</b>${s.sub ? `<br><small>${esc(s.sub)}</small>` : ''}</span></li>`).join('')}</ol>` : ''}`;
     } else if (S.screen === 'nav') {
@@ -396,7 +395,7 @@
     else if (a === 'play') { S.play = !S.play; if (S.play && S.pos >= S.R.total - 2) S.pos = 0; S.follow = true; t.textContent = S.play ? 'Pause' : 'Play'; $('#recenter').hidden = true; }
     else if (a === 'speed') { S.mult = +t.dataset.v; document.querySelectorAll('[data-act=speed]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === S.mult))); }
     else if (a === 'voice') { S.voice = !S.voice; store.set('voice', S.voice ? '1' : '0'); $('#navcard').dataset.k = ''; updateNav(); if (S.voice) speak('Voice guidance on'); }
-    else if (a === 'recenter') { if (S.screen === 'home') { if (S.raw) map.easeTo({ center: S.raw.ll, zoom: Math.max(map.getZoom(), 17), duration: dur(600) }); else camHome(true); } else { S.follow = true; t.hidden = true; camNav(true); } }
+    else if (a === 'recenter') { if (S.screen === 'preview') camRoute(true); else if (S.screen === 'home') { if (S.raw) map.easeTo({ center: S.raw.ll, zoom: Math.max(map.getZoom(), 17), duration: dur(600) }); else camHome(true); } else { S.follow = true; t.hidden = true; camNav(true); } }
     else if (a === 'wayback') wayBack();
     else if (a === 'again') { S.pos = 0; S.screen = 'preview'; render(); camRoute(true); }
     else if (a === 'done') { home(); if (S.orient === 'drawn') map.easeTo({ bearing: drawnBearing(), duration: dur(500) }); }
