@@ -26,7 +26,7 @@
                   set(k, v) { try { localStorage.setItem('iitd.' + k, v); } catch (e) {} } };
   const S = { screen: 'home', from: 'gate', to: null, prof: store.get('prof', 'wheelchair'), R: null, pos: 0, play: false, mult: 8,
     voice: store.get('voice', '0') === '1', gps: false, watch: null, follow: true, camB: 0, off: 0, raw: null, said: {}, q: '', cat: 'All',
-    allSteps: false, view: 'standard', orient: 'drawn', navNorth: false, preview: false,
+    allSteps: false, homeOpen: false, view: 'standard', orient: 'drawn', navNorth: false, preview: false,
     test: store.get('test', '0') === '1' };
 
   // ---------------------------------------------------------------- route building
@@ -233,15 +233,23 @@
   }
   let lastScreen = null;
   function render() {
-    document.body.dataset.screen = S.screen;
+    document.body.dataset.screen = S.screen; document.body.classList.toggle('searching', S.screen === 'home' && S.homeOpen);
     const sh = $('#sheet'); sh.className = 'sheet ' + S.screen;
     $('#navcard').hidden = S.screen !== 'nav';
     $('#recenter').hidden = !(S.screen === 'nav' && !S.follow);
-    if (S.screen === 'home') {
-      sh.innerHTML = `<div class="grab" aria-hidden="true"></div><h1 tabindex="-1">Where to?</h1>
-        <div class="srch">${I('search')}<input id="q" type="search" placeholder="Search a building or place" aria-label="Search a building or place" autocomplete="off" value="${esc(S.q)}"></div>
-        <div class="chips" role="group" aria-label="Filter by type">${CATS.map(c => `<button class="fchip" data-act="cat" data-v="${c}" aria-pressed="${S.cat === c}">${c}</button>`).join('')}</div>
-        <p class="here">You are at <button class="link" data-act="from" aria-label="You are at ${START[S.from].name}. Change starting point">${START[S.from].name}</button></p>
+    if (S.screen === 'home' && !S.homeOpen) {
+      sh.className = 'sheet home mini';
+      sh.innerHTML = `<h1 class="sr">Where to?</h1><button class="pillsearch" data-act="openSearch" aria-label="Where to? Search a building or place">${I('search')}<span>Where to?</span></button>`;
+    } else if (S.screen === 'home') {
+      sh.className = 'sheet home open';
+      const counts = {}; DEST.forEach(d => counts[d.cat] = (counts[d.cat] || 0) + 1);
+      const CI = { All: 'search', Academic: 'hall', Offices: 'building', Medical: 'cross', Hostels: 'bed', 'Sports & culture': 'ball' };
+      sh.innerHTML = `<div class="grab" aria-hidden="true"></div>
+        <div class="srchrow"><button class="x" data-act="closeSearch" aria-label="Close search">${I('back')}</button>
+          <div class="srch">${I('search')}<input id="q" type="search" placeholder="Where to?" aria-label="Search a building or place" autocomplete="off" value="${esc(S.q)}"></div></div>
+        <p class="here">From <button class="link" data-act="from" aria-label="From ${START[S.from].name}. Change starting point">${START[S.from].name}</button></p>
+        <div class="cats" role="group" aria-label="Type of place">${CATS.map(c => `<button class="cat" data-act="cat" data-v="${c}" aria-pressed="${S.cat === c}">${I(CI[c] || 'building')}<span>${c === 'All' ? 'All places' : c}</span></button>`).join('')}</div>
+        <h2 class="lh">${S.cat === 'All' ? 'Places' : esc(S.cat)}</h2>
         <ul class="list" id="results" aria-label="Places">${results()}</ul>`;
     } else if (S.screen === 'preview') {
       const R = S.R;
@@ -367,14 +375,16 @@
     $('#fromModal').hidden = false; $('#fromTitle').focus();
   }
   function setFrom(k) { S.from = k; $('#fromModal').hidden = true; if (S.to) pick(S.to); else { render(); camHome(true); } }
-  function home() { S.to = null; S.R = null; drawRoute(); S.screen = 'home'; render(); camHome(true); }
+  function home() { S.to = null; S.R = null; S.homeOpen = false; S.q = ''; S.cat = 'All'; drawRoute(); S.screen = 'home'; render(); camHome(true); }
   document.addEventListener('click', e => {
     const t = e.target.closest('[data-act]');
     if (!t) { if (e.target.id === 'fromModal') $('#fromModal').hidden = true; if (e.target.id === 'keyModal') $('#keyModal').hidden = true;
       if (!e.target.closest('#layersMenu')) { $('#layersMenu').hidden = true; $('#layersBtn').setAttribute('aria-expanded', 'false'); } return; }
     const a = t.dataset.act;
     if (a === 'pick') pick(t.dataset.id);
-    else if (a === 'cat') { S.cat = t.dataset.v; document.querySelectorAll('[data-act=cat]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.cat))); $('#results').innerHTML = results(); }
+    else if (a === 'openSearch') { S.homeOpen = true; render(); const q = $('#q'); if (q) q.focus(); }
+    else if (a === 'closeSearch') { S.homeOpen = false; S.q = ''; S.cat = 'All'; render(); camHome(true); }
+    else if (a === 'cat') { S.cat = t.dataset.v; document.querySelectorAll('[data-act=cat]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.cat))); $('#results').innerHTML = results(); $('.lh').textContent = S.cat === 'All' ? 'Places' : S.cat; }
     else if (a === 'close') home();
     else if (a === 'from') openFrom();
     else if (a === 'closeFrom') $('#fromModal').hidden = true;
@@ -399,7 +409,7 @@
   document.addEventListener('input', e => { if (e.target.id === 'q') { S.q = e.target.value; $('#results').innerHTML = results(); } });
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter' && e.target.id === 'q') { const b = document.querySelector('#results button.item'); if (b) b.click(); }
-    if (e.key === 'Escape') { $('#keyModal').hidden = true; $('#fromModal').hidden = true; $('#layersMenu').hidden = true; }
+    if (e.key === 'Escape') { if (S.screen === 'home' && S.homeOpen && $('#keyModal').hidden && $('#fromModal').hidden) { S.homeOpen = false; render(); } $('#keyModal').hidden = true; $('#fromModal').hidden = true; $('#layersMenu').hidden = true; }
   });
   map.on('dragstart', () => { if (S.screen === 'nav') { S.follow = false; $('#recenter').hidden = false; } });
   // test mode lives in the design-team tools panel (open with #tools)

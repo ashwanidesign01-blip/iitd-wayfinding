@@ -199,3 +199,18 @@ body[data-screen=nav] .edge #layersBtn{display:none}
 .kdot.me-k{width:18px;height:18px;border-radius:50%;background:#F1592A;border:3px solid #fff;box-shadow:0 0 0 4px #F1592A40}
 .ktag{display:inline-flex;align-items:center;gap:3px;background:#fff;color:#262626;font-size:11px;font-weight:700;border-radius:3px;padding:2px 5px}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.pulse{animation:none!important}}
+/* Home: floating "Where to?" bar that expands into the destination picker */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sheet.home.mini{left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));border-radius:30px;padding:6px;max-height:none;overflow:visible;box-shadow:0 4px 20px #0007}
+.pillsearch{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;border:0;border-radius:26px;background:#3F3F3F;color:#fff;padding:0 18px;font:600 19px 'IBM Plex Sans',sans-serif;cursor:pointer;text-align:left}
+.pillsearch span{color:#E5E5E5}
+.sheet.home.open{max-height:82vh;max-height:82dvh;height:82vh;height:82dvh}
+.srchrow{display:flex;align-items:center;gap:6px}
+.srchrow .x{margin-left:-10px}
+.srchrow .srch{flex:1}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 4px}
+.cat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:76px;border:1.5px solid #444;border-radius:14px;background:#2f2f2f;color:#fff;font:600 13px 'IBM Plex Sans',sans-serif;cursor:pointer;padding:8px 4px;text-align:center}
+.cat[aria-pressed=true]{background:#fff;color:#262626;border-color:#fff}
+.lh{font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:#BDBDBD;margin:14px 0 2px}
+.sheet.home.mini{background:#262626}
+body.searching .edge{display:none}
