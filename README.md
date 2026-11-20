@@ -51,3 +51,12 @@ Keep the same artboard (1670.81 x 768.86) so the alignment stays valid.
 - `data/` – GeoJSON for later steps
 
 Map data © OpenStreetMap contributors. Vector tiles: OpenFreeMap.
+
+## UX (Nov 2026 pass)
+- Compass (top right): needle shows north; tap to switch north-up / as drawn (or heading-up / north-up while navigating).
+- **?** map key (top right): legend for your route plus the layer on screen.
+- One layers button (Standard / Accessibility / Parking) and recentre on the right edge; zoom buttons, scale bar and tools removed.
+- Preview: Wheelchair / Walking switch (Wheelchair by default, remembered), accessibility strip, steps collapsed.
+- Navigation: lighter card with voice button, early warnings for steep and road sections, calm off-route prompt with "Show the way back", live GPS starts automatically.
+- Accessibility: Go button darkened to #C2570C (4.5:1), dark icons on orange/blue tiles, dotted pattern on steep and dashed on road sections, labelled controls, focus moves to each new screen, reduced motion respected.
+- Design-team tools: add `#tools` to the address. Test mode there simulates the walk instead of GPS.

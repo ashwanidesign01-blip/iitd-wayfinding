@@ -12,8 +12,6 @@
     attributionControl: { compact: true },
     dragRotate: true, pitchWithRotate: false, maxPitch: 0
   });
-  map.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: false }), 'top-right');
-  map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'top-right');
 
   /* ---------- recolour the OSM vector style to the campus palette ---------- */
   let currentStyle = 'campus';
