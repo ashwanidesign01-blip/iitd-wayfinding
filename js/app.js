@@ -237,7 +237,7 @@
     document.body.dataset.screen = S.screen; document.body.classList.toggle('searching', S.screen === 'home' && S.homeOpen);
     const sh = $('#sheet'); sh.className = 'sheet ' + S.screen;
     $('#navcard').hidden = S.screen !== 'nav';
-    $('#recenter').hidden = !(S.screen === 'nav' && !S.follow);
+    $('#recenter').hidden = !((S.screen === 'nav' && !S.follow) || S.screen === 'home');
     if (S.screen === 'home' && !S.homeOpen) {
       sh.className = 'sheet home mini';
       sh.innerHTML = `<h1 class="sr">Where to?</h1><button class="pillsearch" data-act="openSearch" aria-label="Where to? Search a building or place">${I('search')}<span>Where to?</span></button>`;
@@ -397,7 +397,7 @@
     else if (a === 'play') { S.play = !S.play; if (S.play && S.pos >= S.R.total - 2) S.pos = 0; S.follow = true; t.textContent = S.play ? 'Pause' : 'Play'; $('#recenter').hidden = true; }
     else if (a === 'speed') { S.mult = +t.dataset.v; document.querySelectorAll('[data-act=speed]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === S.mult))); }
     else if (a === 'voice') { S.voice = !S.voice; store.set('voice', S.voice ? '1' : '0'); $('#navcard').dataset.k = ''; updateNav(); if (S.voice) speak('Voice guidance on'); }
-    else if (a === 'recenter') { S.follow = true; t.hidden = true; camNav(true); }
+    else if (a === 'recenter') { if (S.screen === 'home') { if (S.raw) map.easeTo({ center: S.raw.ll, zoom: Math.max(map.getZoom(), 17), duration: dur(600) }); else camHome(true); } else { S.follow = true; t.hidden = true; camNav(true); } }
     else if (a === 'wayback') wayBack();
     else if (a === 'again') { S.pos = 0; S.screen = 'preview'; render(); camRoute(true); }
     else if (a === 'done') { home(); if (S.orient === 'drawn') map.easeTo({ bearing: drawnBearing(), duration: dur(500) }); }

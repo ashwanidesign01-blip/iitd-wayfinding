@@ -226,3 +226,10 @@ body[data-screen=arrived] .sheet h1{text-align:center}
 .go.wide{width:100%}
 body[data-screen=arrived] .more{display:block;margin:8px auto 0;color:#7FD3F5;text-decoration:none}
 .go.wide{margin-top:8px}
+
+/* Figma 01 Home (ready for dev): exact spacing */
+.corner{right:16px;gap:10px}
+.edge{right:16px;gap:15px}
+#keyBtn{border-radius:50%}
+.sheet.home.mini{width:min(287px,calc(100% - 24px));bottom:max(16px,env(safe-area-inset-bottom))}
+body[data-screen=home]:not(.searching) .edge{bottom:calc(var(--sheet-h) + max(16px,env(safe-area-inset-bottom)) + 62px)}
