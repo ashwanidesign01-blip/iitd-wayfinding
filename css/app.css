@@ -52,7 +52,7 @@ select{font:inherit;font-size:15px;background:var(--pill);color:#fff;border:0;bo
 .dirs li:first-child{border-top:0}
 .dirs small{color:#BDBDBD}
 .di{width:30px;height:30px;border-radius:6px;background:#3a3a3a;display:grid;place-items:center;flex:none;font-size:16px;color:#fff}
-.di-steep{background:#EDA13A}.di-road{background:#ED1C24}.di-smooth{background:#00AEEF}.di-arrive{background:#ED1C24}.di-start{background:#111827}
+.di-steep{background:#E69F00}.di-road{background:#B3261E}.di-smooth{background:#0072B2}.di-arrive{background:#ED1C24}.di-start{background:#111827}
 /* ===================== app UI (phone first) ===================== */
 body{color:#fff;overflow:hidden;overscroll-behavior:none}
 .ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
@@ -101,12 +101,12 @@ body[data-screen=nav] .topbar,body[data-screen=nav] .maplibregl-ctrl-top-right{d
 .sheet .dirs small{color:#BDBDBD;font-size:13px}
 .di{width:34px;height:34px;border-radius:6px;background:#3a3a3a;display:grid;place-items:center;flex:none}
 .di .ic{width:20px;height:20px}
-.di-steep{background:#EDA13A}.di-road{background:#ED1C24}.di-smooth{background:#00AEEF}.di-flag{background:#ED1C24}.di-start{background:#111827}
+.di-steep{background:#E69F00}.di-road{background:#B3261E}.di-smooth{background:#0072B2}.di-flag{background:#ED1C24}.di-start{background:#111827}
 .navcard{position:absolute;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:6;background:#262626;border-radius:18px;padding:14px;
   display:flex;gap:14px;align-items:center;box-shadow:0 6px 24px #0007;max-width:500px;margin:0 auto}
 .navcard .big{width:66px;height:66px;border-radius:8px;background:#F37A1F;display:grid;place-items:center;flex:none}
 .navcard .big .ic{width:40px;height:40px;stroke-width:2.4}
-.navcard .big.steep{background:#EDA13A}.navcard .big.road{background:#ED1C24}.navcard .big.smooth{background:#00AEEF}
+.navcard .big.steep{background:#E69F00}.navcard .big.road{background:#B3261E}.navcard .big.smooth{background:#0072B2}
 .navcard .in{color:#F37A1F;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase}
 .navcard h2{margin:2px 0;font-size:22px;line-height:1.15}.navcard p{margin:2px 0 0;color:#BDBDBD;font-size:14px}
 .navcard p.on{font-size:12px;color:#8F8F8F}
@@ -169,11 +169,11 @@ body[data-screen=nav] .edge #layersBtn{display:none}
 .res{align-items:center}
 .res .big{font-size:28px;font-weight:700;line-height:1.1}.res .big small{display:block;font-size:15px;font-weight:400;color:#BDBDBD}
 .more{border:0;background:none;color:#fff;font:600 15px 'IBM Plex Sans',sans-serif;text-decoration:underline;min-height:44px;padding:0;margin-top:6px;cursor:pointer}
-.di-steep,.di-smooth{color:#1A1A1A}
+.di-steep{color:#1A1A1A}.di-smooth{color:#fff}
 /* navigation: light top card, slim bottom bar */
 .navcard{right:66px;padding:12px;gap:12px;align-items:flex-start}
 .navcard .big{width:56px;height:56px}.navcard .big .ic{width:34px;height:34px}
-.navcard .big.steep,.navcard .big.smooth{color:#1A1A1A}
+.navcard .big.steep{color:#1A1A1A}.navcard .big.smooth{color:#fff}
 .navcard .txt{flex:1;min-width:0}
 .navcard h2{font-size:21px}.navcard p{font-size:14px}
 .navcard.soon{box-shadow:0 0 0 3px #EDA13A,0 6px 24px #0007}
@@ -286,3 +286,9 @@ body.searching .edge{bottom:calc(50.4vh + 19px);bottom:calc(50.4dvh + 19px)}
 .sheet.preview .go{width:100%;min-height:64px;border-radius:4px;font-size:22px;font-weight:700}
 .sheet.preview .more{align-self:flex-start;color:#7FD3F5;text-decoration:none;font-size:15px;font-weight:600;min-height:20px;margin:0}
 body[data-screen=preview] .edge{bottom:calc(var(--sheet-h) + 19px)}
+
+/* Accessibility phase 1: footpath coding never relies on colour alone (patterns kept light) */
+.L3c26,.L4c22{fill:url(#fpHatch)!important;stroke:#C0504A!important;stroke-width:.32px!important}
+.L3c72,.L4c72{fill:url(#fpChev)!important}
+.L3c10,.L4c10{stroke:#3F8F4A!important;stroke-width:.42px!important}
+.L3c30,.L3c31,.L3c32,.L3c33,.L3c34,.L3c35,.L3c36,.L3c37,.L3c38,.L3c39,.L4c26,.L4c27,.L4c28,.L4c29,.L4c30,.L4c31,.L4c32,.L4c33,.L4c34,.L4c35,.L4c62{stroke:#333!important;stroke-width:.35px!important}
