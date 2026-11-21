@@ -311,3 +311,6 @@ body[data-screen=nav] .edge{bottom:calc(var(--sheet-h) + 20px);gap:14px}
 .navstats b{font-size:26px;line-height:34px;font-weight:700;margin:0}
 .navstats span{font-size:14px;line-height:18px;color:#CFCFCF}
 .go.end{min-width:0;min-height:52px;height:52px;padding:0 24px;border-radius:999px;background:#B3261E;color:#fff;font-size:17px;font-weight:700}
+
+/* buttons that do not fit above the bottom panel are hidden (see fitControls in app.js) */
+.cbtn.nofit{display:none!important}

@@ -216,7 +216,7 @@
   function setView(v) {
     S.view = v; const btn = document.querySelector(`[data-view="${v}"]`); if (btn) btn.click();
     document.querySelectorAll('[data-act=view]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === v)));
-    $('#layersBtn').classList.toggle('on', v !== 'standard'); $('#layersMenu').hidden = true;
+    $('#layersBtn').classList.toggle('on', v !== 'standard'); $('#layersMenu').hidden = true; fitControls();
     const ab = $('#accessBtn'); ab.classList.toggle('on', v === 'accessibility'); ab.setAttribute('aria-pressed', String(v === 'accessibility')); $('#layersBtn').setAttribute('aria-expanded', 'false');
   }
 
@@ -282,10 +282,35 @@
         <p class="arr"><b>${esc(R.destName)}</b><br>${R.steps ? 'Use the main entrance ahead of you – it has 7 steps.' : 'Use the wheelchair accessible ramp ahead of you to enter the building.'}</p>
         <button class="go wide" data-act="done">Done</button><button class="more" data-act="another">Plan another route</button>`;
     }
-    document.documentElement.style.setProperty('--sheet-h', sheetH() + 'px');
+    fitControls();
     placeMarkers(); updateCompass();
     if (S.screen !== lastScreen) { lastScreen = S.screen; const h = sh.querySelector('h1') || $('#navcard h2'); if (h && S.screen !== 'home') h.focus({ preventScroll: true }); }
   }
+  // ---------------------------------------------------------------- map buttons never overlap the panels
+  // The buttons sit above the bottom panel's live height; if there is not enough room between the
+  // top controls and the panel, the least important ones hide (? first, then layers, accessibility, compass, recentre).
+  const HIDE_ORDER = ['keyBtn', 'layersBtn', 'accessBtn', 'compass', 'recenter'];
+  let fitKey = '';
+  function refit() { const k = $('#sheet').offsetHeight + ':' + $('#navcard').offsetHeight + ':' + innerHeight; if (k !== fitKey) fitControls(); }
+  function fitControls() {
+    const root = document.documentElement, sh = $('#sheet'), card = $('#navcard');
+    fitKey = sh.offsetHeight + ':' + card.offsetHeight + ':' + innerHeight;
+    root.style.setProperty('--sheet-h', sh.offsetHeight + 'px');
+    if (!card.hidden) root.style.setProperty('--navcard-h', card.offsetHeight + 'px');
+    if (!$('#layersMenu').hidden) return;                       // leave things alone while the layer menu is open
+    HIDE_ORDER.forEach(id => document.getElementById(id).classList.remove('nofit'));
+    const sheetTop = sh.getBoundingClientRect().top;
+    const clash = () => {
+      const c = $('.corner').getBoundingClientRect(), e = $('.edge').getBoundingClientRect();
+      const cardB = card.hidden ? 0 : card.getBoundingClientRect().bottom;
+      return (c.height && (c.bottom > sheetTop - 8 || c.top < cardB)) || (e.height && (e.top < Math.max(c.height ? c.bottom : 0, cardB) + 8 || e.bottom > sheetTop - 4));
+    };
+    for (const id of HIDE_ORDER) { if (!clash()) break; document.getElementById(id).classList.add('nofit'); }
+  }
+  if (window.ResizeObserver) { const ro = new ResizeObserver(() => fitControls()); ro.observe($('#sheet')); ro.observe($('#navcard')); }
+  window.addEventListener('resize', fitControls);
+  if (window.visualViewport) visualViewport.addEventListener('resize', fitControls);
+
   function results() {
     const q = S.q.trim().toLowerCase();
     const list = DEST.filter(d => (S.cat === 'All' || d.cat === S.cat) && (!q || (d.name + ' ' + d.al + ' ' + d.cat).toLowerCase().includes(q)))
@@ -311,7 +336,7 @@
     if (card.dataset.k !== dist + m.text) { card.innerHTML = html; card.dataset.k = dist + m.text; }
     card.classList.toggle('soon', soon);
     const t = $('#remT'); if (t) { t.textContent = fmtT(rem, S.prof); $('#remD').textContent = `${fmtM(rem)} left · ${R.destName}`; }
-    document.documentElement.style.setProperty('--navcard-h', card.offsetHeight + 'px');
+    refit();
     const key = R.man.indexOf(m);
     if (!S.said['a' + key] && S.pos > 1) { S.said['a' + key] = 1; speak(`In ${Math.max(5, Math.round(left / 5) * 5)} metres, ${say(m)}`); }
     if (soon && left > 15 && !S.said['w' + key]) { S.said['w' + key] = 1; speak(`${m.text} in ${Math.round(left / 5) * 5} metres`); }
@@ -332,7 +357,7 @@
   function arrive() { leaveNav(); S.pos = S.R.total; S.screen = 'arrived'; render(); camRoute(true); }
 
   // ---- live GPS, snapped onto the route
-  function gpsLine(t) { const l = $('#gpsline'); if (l) l.textContent = t; }
+  function gpsLine(t) { const l = $('#gpsline'); if (l) l.textContent = t; refit(); }
   function noGps(t) { S.gps = false; render(); gpsLine(t + ' Follow the steps, or tap Play to preview the walk.'); }
   function gpsOn() {
     if (!navigator.geolocation || !window.isSecureContext) { noGps('Your location isn’t available here.'); return; }
@@ -355,12 +380,12 @@
     }
     S.raw = { ll, q, pt: best.pt };
     if (best.off > 25) {
-      if (++S.off >= 3) { $('#offroute').hidden = false; if (S.off === 3) speak('You are off the route. Head back to the coloured path.'); }
+      if (++S.off >= 3) { $('#offroute').hidden = false; refit(); if (S.off === 3) speak('You are off the route. Head back to the coloured path.'); }
       gpsLine(`About ${Math.round(best.off)} m from the route`);
       rawM.setLngLat(ll).addTo(map); backLine.setAttribute('points', [q, best.pt].map(p => p.join(',')).join(' ')); backLine.style.display = '';
       return;
     }
-    S.off = 0; $('#offroute').hidden = true; rawM.remove(); backLine.style.display = 'none';
+    S.off = 0; $('#offroute').hidden = true; refit(); rawM.remove(); backLine.style.display = 'none';
     S.pos = Math.max(S.pos - 5, best.s); gpsLine(`Live location · ±${Math.round(acc)} m`);
     updateNav(); camNav(false);
   }
@@ -382,7 +407,7 @@
   document.addEventListener('click', e => {
     const t = e.target.closest('[data-act]');
     if (!t) { if (e.target.id === 'fromModal') $('#fromModal').hidden = true; if (e.target.id === 'keyModal') $('#keyModal').hidden = true;
-      if (!e.target.closest('#layersMenu')) { $('#layersMenu').hidden = true; $('#layersBtn').setAttribute('aria-expanded', 'false'); } return; }
+      if (!e.target.closest('#layersMenu')) { $('#layersMenu').hidden = true; $('#layersBtn').setAttribute('aria-expanded', 'false'); fitControls(); } return; }
     const a = t.dataset.act;
     if (a === 'pick') pick(t.dataset.id);
     else if (a === 'openSearch') { S.homeOpen = true; render(); const q = $('#q'); if (q) q.focus(); }
@@ -408,7 +433,7 @@
     else if (a === 'access') setView(S.view === 'accessibility' ? 'standard' : 'accessibility');
     else if (a === 'another') { home(); S.homeOpen = true; render(); const q = $('#q'); if (q) q.focus(); }
     else if (a === 'closeKey') $('#keyModal').hidden = true;
-    else if (a === 'layers') { const m = $('#layersMenu'); m.hidden = !m.hidden; t.setAttribute('aria-expanded', String(!m.hidden)); e.stopPropagation(); }
+    else if (a === 'layers') { const m = $('#layersMenu'); m.hidden = !m.hidden; t.setAttribute('aria-expanded', String(!m.hidden)); e.stopPropagation(); fitControls(); }
     else if (a === 'view') setView(t.dataset.v);
   });
   document.addEventListener('input', e => { if (e.target.id === 'q') { S.q = e.target.value; $('#results').innerHTML = results(); } });
