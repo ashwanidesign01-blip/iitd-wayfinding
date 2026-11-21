@@ -189,35 +189,42 @@
   }
 
   // ---------------------------------------------------------------- map key (?) – changes with the layer on screen
+  const KI = {
+    entrance: '<svg width="30" height="30" viewBox="4.5 171.3 20.9 20.9" aria-hidden="true"><circle fill="#6b9e5a" cx="14.94" cy="181.72" r="9.89"/> <polygon fill="#fff" points="15.38 188.07 21.85 181.59 15.38 175.12 13.06 175.12 18.7 180.74 8.76 180.74 8.76 182.38 18.77 182.37 13.06 188.07 15.38 188.07"/></svg>',
+    reserved: '<svg width="30" height="30" viewBox="4.94 264.79 20 20" aria-hidden="true"><rect fill="#165395" x="4.94" y="264.79" width="20" height="20" rx="2.8" ry="2.8"/> <path fill="#fff" d="M10.95,267.35c1.85,0,2.91,1.15,2.91,2.75s-1.08,2.73-2.95,2.73h-1.47v2.66h-1.67v-8.14h3.17ZM12.14,270.1c0-.82-.48-1.37-1.5-1.37h-1.2v2.76h1.2c1.02,0,1.5-.57,1.5-1.39Z"/> <g><path fill="#fff" d="M21.7,281.63l-.9-3.5h-1.7c-.37-.98-1.22-1.71-2.24-1.93l.39-1.51c.13-.51.59-.87,1.12-.87h.24v3h.7v-3.7h-.94c-.85,0-1.58.57-1.79,1.39l-.41,1.61c-1.69,0-3.06,1.39-3.06,3.1s1.39,3.1,3.1,3.1,3.1-1.39,3.1-3.1c0-.13,0-.27-.03-.4h.83l.9,3.5h1.38v-.7h-.68ZM16.19,281.63c-1.32,0-2.4-1.08-2.4-2.4s1.08-2.4,2.4-2.4,2.4,1.08,2.4,2.4-1.08,2.4-2.4,2.4Z"/> <path fill="#fff" d="M18.68,272.77l.09.05h.35l.09-.05s.96-.61.96-1.42c0-.68-.55-1.23-1.23-1.23s-1.23.55-1.23,1.23c0,.81.93,1.4.97,1.42ZM18.94,270.82c.29,0,.52.24.52.52s-.31.58-.52.75c-.22-.17-.53-.47-.53-.75s.24-.52.52-.52Z"/> </g></svg>',
+    bicycle: '<svg width="30" height="30" viewBox="4.94 288.05 20 20" aria-hidden="true"><rect fill="#165395" x="4.94" y="288.05" width="20" height="20" rx="2.8" ry="2.8"/> <path fill="#fff" d="M10.95,290.61c1.85,0,2.91,1.15,2.91,2.75s-1.08,2.73-2.95,2.73h-1.47v2.66h-1.67v-8.14h3.17ZM12.14,293.36c0-.82-.48-1.37-1.5-1.37h-1.2v2.76h1.2c1.02,0,1.5-.57,1.5-1.39Z"/> <path fill="#fff" d="M20.08,300.14c-.57,0-1.09.16-1.53.43l-.69-.79.33-.62h.57v-.69h-1.95v.69h.6l-.17.33h-4.29l.67-1.29h1.38v-.69h-2.52v.69h.36l-1.09,2.1c-.32-.12-.66-.18-1.02-.18-1.63,0-2.95,1.32-2.95,2.95s1.32,2.95,2.95,2.95,2.95-1.32,2.95-2.95c0-1.03-.53-1.94-1.34-2.47h.02s.09-.15.09-.15l3.03,3.24h1.71c.28,1.34,1.46,2.38,2.89,2.38,1.64,0,2.95-1.33,2.95-2.95s-1.33-2.98-2.95-2.98ZM12.99,303.07c0,1.25-1.01,2.26-2.26,2.26s-2.26-1.01-2.26-2.26,1.01-2.26,2.26-2.26c.25,0,.49.04.72.12l-1.02,1.97.62.31,1.01-1.97c.56.41.93,1.08.93,1.83ZM13.17,300.2h3.7l-1.33,2.55-2.38-2.55ZM17.12,303h-.93l1.33-2.55.48.55c-.52.52-.84,1.21-.88,2ZM18.46,301.52l1.27,1.46h-1.91c.03-.57.26-1.09.64-1.46ZM20.08,305.37c-1.05,0-1.93-.72-2.19-1.69h2.05c.24,0,.45-.14.55-.34.1-.21.07-.47-.1-.64l-1.38-1.59c.31-.17.69-.28,1.07-.28,1.24,0,2.26,1.02,2.26,2.26s-1.02,2.27-2.26,2.27Z"/></svg>',
+    steps: '<svg width="30" height="30" viewBox="162.37 172.17 19.1 19.1" aria-hidden="true"><rect fill="#e6e7e8" x="162.37" y="172.17" width="19.1" height="19.1"/> <polygon fill="#231f20" points="175.46 174.75 174.21 174.75 174.21 179.39 170.82 179.39 169.56 179.39 169.56 184.04 166.18 184.04 164.92 184.04 164.92 188.68 166.18 188.68 166.18 185.29 170.82 185.29 170.82 184.04 170.82 180.65 175.46 180.65 175.46 179.39 175.46 176.01 178.91 176.01 178.91 174.75 175.46 174.75"/></svg>',
+    rampFlat: '<svg width="30" height="30" viewBox="162.37 199.37 20 20" aria-hidden="true"><rect fill="#165395" x="162.37" y="199.37" width="20" height="20" transform="translate(344.73 418.74) rotate(-180)"/> <g><polygon fill="#6b9e5a" points="164.48 212.71 180.35 216.82 164.48 216.82 164.48 212.71"/> <polygon fill="#fff" points="171.66 212.08 168.79 205.65 175.2 202.78 176.86 203.41 171.28 205.91 178.41 208.62 177.96 209.8 170.78 207.05 173.32 212.71 171.66 212.08"/> </g></svg>',
+    rampSteep: '<svg width="30" height="30" viewBox="162.37 227.02 20 20" aria-hidden="true"><rect fill="#165395" x="162.37" y="227.02" width="20" height="20" transform="translate(344.73 474.05) rotate(-180)"/> <g><polygon fill="#eda13a" points="164.48 238.89 180.35 244.47 164.48 244.47 164.48 238.89"/> <polygon fill="#fff" points="171.66 239.73 168.79 233.31 175.2 230.43 176.86 231.06 171.28 233.56 178.41 236.28 177.96 237.45 170.78 234.71 173.32 240.37 171.66 239.73"/> </g></svg>',
+    rampNo: '<svg width="30" height="30" viewBox="162.37 254.68 20 20" aria-hidden="true"><rect fill="#165395" x="162.37" y="254.68" width="20" height="20" transform="translate(344.73 529.36) rotate(-180)"/> <g><polygon fill="#ed1c24" points="164.48 264.93 180.35 272.37 164.48 272.37 164.48 264.93"/> <polygon fill="#fff" points="171.33 266.96 168.93 260.34 175.54 257.94 177.15 258.69 171.39 260.77 178.31 264 177.78 265.14 170.82 261.88 172.94 267.71 171.33 266.96"/> </g></svg>',
+    blocked: '<svg width="30" height="30" viewBox="161.9 281.9 20.9 20.9" aria-hidden="true"><rect fill="#f9ed32" x="165.3" y="285.27" width="14.14" height="14.14" transform="translate(257.2 -36.26) rotate(45)"/> <g><path fill="#010101" d="M176.12,288.73v.58h-7.5v-.58h-.58v5.2h.58v-1.44h7.5v1.44h.58v-5.2h-.58ZM172.27,289.89h1.1l-.9,2.02h-1.1l.9-2.02ZM170.74,291.91h-1.1l.9-2.02h1.1l-.9,2.02ZM174,289.89h1.1l-.9,2.02h-1.1l.9-2.02ZM168.61,289.89h1.29l-.9,2.02h-.39v-2.02ZM176.12,291.91h-1.29l.9-2.02h.39v2.02Z"/> <rect fill="#010101" x="166.72" y="293.93" width="11.29" height="1.07"/> </g></svg>'
+  };
   const sw = {
-    line: (c, extra) => `<svg width="40" height="14" aria-hidden="true"><line x1="4" y1="7" x2="36" y2="7" stroke="#1A1A1A" stroke-width="12" stroke-linecap="round"/><line x1="4" y1="7" x2="36" y2="7" stroke="#fff" stroke-width="10" stroke-linecap="round"/><line x1="4" y1="7" x2="36" y2="7" stroke="${c}" stroke-width="6" stroke-linecap="round"/>${extra || ''}</svg>`,
-    fp: (fill, stroke) => `<svg width="40" height="14" aria-hidden="true"><rect x="2" y="3" width="36" height="8" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/></svg>`,
-    hatch: () => `<svg width="40" height="14" aria-hidden="true"><defs><pattern id="kHatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><rect width="5" height="5" fill="#F6DAD7"/><rect width="1.3" height="5" fill="#D46A62"/></pattern></defs><rect x="2" y="3" width="36" height="8" rx="2" fill="url(#kHatch)" stroke="#C0504A" stroke-width="1.5"/></svg>`,
-    chev: () => `<svg width="40" height="14" aria-hidden="true"><rect x="2" y="3" width="36" height="8" rx="2" fill="#F1C878"/><circle cx="6" cy="5.5" r="1.2" fill="#A8741C"/><circle cx="12" cy="8.5" r="1.2" fill="#A8741C"/><circle cx="18" cy="5.5" r="1.2" fill="#A8741C"/><circle cx="24" cy="8.5" r="1.2" fill="#A8741C"/><circle cx="30" cy="5.5" r="1.2" fill="#A8741C"/><circle cx="35" cy="8.5" r="1.2" fill="#A8741C"/></svg>`
+    line: (c, extra) => `<svg width="44" height="16" aria-hidden="true"><line x1="5" y1="8" x2="39" y2="8" stroke="#1A1A1A" stroke-width="13" stroke-linecap="round"/><line x1="5" y1="8" x2="39" y2="8" stroke="#fff" stroke-width="10.5" stroke-linecap="round"/><line x1="5" y1="8" x2="39" y2="8" stroke="${c}" stroke-width="6.5" stroke-linecap="round"/>${extra || ''}</svg>`,
+    // footpath strip as drawn on the map: fill between two edge lines
+    strip: (fill, edge, extra) => `<svg width="44" height="20" aria-hidden="true">${extra && extra.defs || ''}<g transform="translate(0 2)"><rect x="0" y="-2" width="44" height="20" rx="3" fill="#F3F0E8" stroke="#D9D4C7" stroke-width="1"/><rect x="2" y="4" width="40" height="8" fill="${fill}"/>${extra && extra.top || ''}<line x1="2" y1="3.6" x2="42" y2="3.6" stroke="${edge}" stroke-width="1.6"/><line x1="2" y1="12.4" x2="42" y2="12.4" stroke="${edge}" stroke-width="1.6"/></g></svg>`
   };
-  const KEY = {
-    route: { title: 'Your route', rows: [
-      [sw.line('#0072B2'), 'Smooth footpath'],
-      [sw.line('#E69F00', '<line x1="4" y1="7" x2="36" y2="7" stroke="#1A1A1A" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round"/>'), 'Steep footpath – go slowly (dotted)'],
-      [sw.line('#B3261E', '<line x1="4" y1="7" x2="36" y2="7" stroke="#fff" stroke-width="2" stroke-dasharray="6 6"/>'), 'On the road – no accessible footpath (dashed)'],
-      [sw.line('#9CA3AF'), 'Already travelled'],
-      ['<span class="kdot me-k"></span>', 'You are here (cone shows your direction)'],
-      ['<svg width="22" height="28" viewBox="-21 -50 42 52" aria-hidden="true"><path d="M0 0C-6 -12 -18 -20 -18 -32a18 18 0 1 1 36 0C18 -20 6 -12 0 0Z" fill="#ED1C24" stroke="#fff" stroke-width="4"/><circle cy="-32" r="7" fill="#fff"/></svg>', 'Destination entrance']] },
-    standard: { title: 'On the map', rows: [
-      ['<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#6B9E5A" stroke="#333" stroke-width="1.2"/><path d="M8 12h7M12 8l4 4-4 4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>', 'Building entrance (green arrow)'],
-      ['<span class="ktag"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h5v-5h5v-5h5V5h3" stroke="#262626" stroke-width="2.5" fill="none"/></svg>7 Steps</span>', 'Steps, with the number of steps'],
-      [sw.fp('#E4E3D7', '#C9C8BA'), 'Building'], [sw.fp('#D4D584', '#D4D584'), 'Lawn or green area'], [sw.fp('#C0BAB2', '#ADA79F'), 'Road']] },
-    accessibility: { title: 'Accessibility layer', rows: [
-      [sw.fp('#FFFFFF', '#3F8F4A'), 'Accessible footpath (green edge)'], [sw.chev(), 'Steep footpath (dotted)'], [sw.hatch(), 'Footpath not accessible for wheelchairs (hatched)'],
-      ['<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="3" fill="#165395"/><circle cx="12" cy="6.5" r="1.6" fill="#fff"/><path d="M12 9v5h4l2 4M12 11.5h4M9.5 12.5a4.2 4.2 0 1 0 5.5 6" stroke="#fff" stroke-width="1.6" fill="none"/></svg>', 'Accessibility sign'],
-      ['<span class="ktag"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h5v-5h5v-5h5V5h3" stroke="#262626" stroke-width="2.5" fill="none"/></svg>7 Steps</span>', 'Steps, with the number of steps']] },
-    parking: { title: 'Parking layer', rows: [
-      ['<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="3" fill="#165395"/><path d="M9 18V6h4a3.5 3.5 0 0 1 0 7H9" stroke="#fff" stroke-width="2.2" fill="none"/></svg>', 'Parking area']] }
-  };
+  const dots = [6, 11, 16, 21, 26, 31, 36].map((x, i) => `<circle cx="${x}" cy="${i % 2 ? 9.6 : 6.4}" r="1.15" fill="#A8741C"/>`).join('');
+  const ROUTE_KEY = () => ({ title: 'Your route', rows: [
+    [sw.line('#0072B2'), 'Smooth footpath'],
+    [sw.line('#E69F00', '<line x1="5" y1="8" x2="39" y2="8" stroke="#1A1A1A" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round"/>'), 'Steep access footpath', 'Go slowly'],
+    [sw.line('#B3261E', '<line x1="5" y1="8" x2="39" y2="8" stroke="#fff" stroke-width="2" stroke-dasharray="6 6"/>'), 'On the road', 'No accessible footpath'],
+    ...(S.screen === 'nav' ? [[sw.line('#9CA3AF'), 'Already travelled']] : []),
+    ['<span class="kdot me-k"></span>', 'You are here'],
+    ['<svg width="24" height="30" viewBox="-21 -50 42 52" aria-hidden="true"><path d="M0 0C-6 -12 -18 -20 -18 -32a18 18 0 1 1 36 0C18 -20 6 -12 0 0Z" fill="#ED1C24" stroke="#fff" stroke-width="4"/><circle cy="-32" r="7" fill="#fff"/></svg>', 'Your destination']] });
+  const MAP_KEY = { title: 'On the map', groups: [
+    ['Entrances', [[KI.entrance, 'Accessible entrance'], [KI.steps, 'Steps at entrance']]],
+    ['Footpaths', [[sw.strip('#FFFFFF', '#3F8F4A'), 'Accessible footpath'],
+      [sw.strip('#F1C878', '#C4802B', { top: dots }), 'Steep access footpath'],
+      [sw.strip('url(#kHatch)', '#C0504A', { defs: '<defs><pattern id="kHatch" patternUnits="userSpaceOnUse" width="4.5" height="4.5" patternTransform="rotate(45)"><rect width="4.5" height="4.5" fill="#F6DAD7"/><rect width="1.3" height="4.5" fill="#D46A62"/></pattern></defs>' }), 'Inaccessible footpath']]],
+    ['Ramps', [[KI.rampFlat, 'Flat or gentle ramp'], [KI.rampSteep, 'Steep ramp'], [KI.rampNo, 'Inaccessible ramp'], [KI.blocked, 'Blocked access']]],
+    ['Parking', [[KI.reserved, 'Reserved parking'], [KI.bicycle, 'Bicycle parking']]]] };
+  const keyRow = ([g, t, sub]) => `<li><span class="kg">${g}</span><span class="kt">${t}${sub ? `<small>${sub}</small>` : ''}</span></li>`;
   function openKey() {
-    const sec = [KEY.route, KEY[S.view] || KEY.standard];
+    const R = ROUTE_KEY();
     $('#keyPanel').innerHTML = `<div class="ph2"><h2 id="keyTitle" tabindex="-1">Map key</h2><button class="x" data-act="closeKey" aria-label="Close map key">${I('close')}</button></div>` +
-      sec.map(s => `<h3>${s.title}</h3><ul class="keylist">${s.rows.map(([g, t]) => `<li><span class="kg">${g}</span><span>${t}</span></li>`).join('')}</ul>`).join('');
+      `<h3>${R.title}</h3><ul class="keylist">${R.rows.map(keyRow).join('')}</ul>` +
+      `<h3>${MAP_KEY.title}</h3>` + MAP_KEY.groups.map(([h, rows]) => `<h4>${h}</h4><ul class="keylist">${rows.map(keyRow).join('')}</ul>`).join('');
     $('#keyModal').hidden = false; $('#keyTitle').focus();
   }
 

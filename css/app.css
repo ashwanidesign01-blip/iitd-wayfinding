@@ -196,6 +196,11 @@ body[data-screen=nav] .edge #layersBtn{display:none}
 .keylist li{display:flex;align-items:center;gap:14px;min-height:44px;border-top:1px solid #3a3a3a;font-size:calc(15px * var(--fz,1))}
 .keylist li:first-child{border-top:0}
 .kg{width:56px;display:flex;justify-content:center;flex:none}
+.mpanel.key h3{font-weight:700;color:inherit;letter-spacing:.06em;margin:18px 0 2px;padding-bottom:6px;border-bottom:2px solid currentColor}
+.mpanel.key h4{font-size:calc(12px * var(--fz,1));font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#BDBDBD;margin:12px 0 0}
+.kt{display:flex;flex-direction:column;min-width:0}
+.kt small{font-size:calc(13px * var(--fz,1));color:#BDBDBD;margin-top:1px}
+.kg svg{display:block}
 .kdot.me-k{width:18px;height:18px;border-radius:50%;background:#F1592A;border:3px solid #fff;box-shadow:0 0 0 4px #F1592A40}
 .ktag{display:inline-flex;align-items:center;gap:3px;background:#fff;color:#262626;font-size:calc(11px * var(--fz,1));font-weight:700;border-radius:3px;padding:2px 5px}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.pulse{animation:none!important}}
@@ -381,6 +386,8 @@ html.light .mini[aria-pressed=true]{background:#1A1A1A;color:#FFFFFF;border-colo
 html.light .offroute{background:#FFF4E0;color:#1A1A1A}
 html.light .arr,html.light .sheet .arr{color:#333333}
 html.light .mpanel h3{color:#555555}
+html.light .mpanel.key h3{color:#1A1A1A}
+html.light :is(.mpanel.key h4,.kt small){color:#555555}
 html.light .keylist li{border-color:#E3E3E3}
 html.light .ktag{background:#1A1A1A;color:#FFFFFF}
 html.light .chk{color:#1A1A1A}
@@ -404,8 +411,8 @@ html.hc .cbtn{outline:2px solid currentColor;outline-offset:-2px}
 html.hc .sheet,html.hc .navcard,html.hc .mpanel{outline:2px solid #1A1A1A}
 html.hc:not(.light) .sheet,html.hc:not(.light) .navcard,html.hc:not(.light) .mpanel{outline-color:#FFFFFF}
 html.hc .x,html.hc .srch,html.hc .seg2,html.hc .cat,html.hc .pillsearch,html.hc .vbtn,html.hc .a11ystep,html.hc .a11ysw{outline:2px solid currentColor;outline-offset:-2px}
-html.hc.light :is(.here,.lh,.item .sb,.fromlink,.big small,.navcard p,.navstats span,.gpsline,.hint,.mpanel h3,.arr,.dirs small,.a11yht p,.a11ysw small){color:#000000!important}
-html.hc:not(.light) :is(.here,.lh,.item .sb,.fromlink,.big small,.navcard p,.navstats span,.gpsline,.hint,.mpanel h3,.arr,.dirs small,.a11yht p,.a11ysw small){color:#FFFFFF!important}
+html.hc.light :is(.here,.lh,.item .sb,.fromlink,.big small,.navcard p,.navstats span,.gpsline,.hint,.mpanel h3,.arr,.dirs small,.a11yht p,.a11ysw small,.mpanel.key h4,.kt small){color:#000000!important}
+html.hc:not(.light) :is(.here,.lh,.item .sb,.fromlink,.big small,.navcard p,.navstats span,.gpsline,.hint,.mpanel h3,.arr,.dirs small,.a11yht p,.a11ysw small,.mpanel.key h4,.kt small){color:#FFFFFF!important}
 html.hc.light .navcard .in{color:#6B3600}
 html.hc.light .more,html.hc.light .sheet.preview .more{color:#00408A;text-decoration:underline}
 html.hc :focus-visible{outline:3px solid #0B5CAD!important;outline-offset:2px}
