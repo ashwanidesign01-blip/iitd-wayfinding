@@ -5,6 +5,7 @@ Live app: https://ashwanidesign01-blip.github.io/iitd-wayfinding/
 QR start points:
 - Main Gate 1: https://ashwanidesign01-blip.github.io/iitd-wayfinding/#qr-gate
 - Zanskar Hostel: https://ashwanidesign01-blip.github.io/iitd-wayfinding/#qr-zanskar
+- Lecture Hall Complex: https://ashwanidesign01-blip.github.io/iitd-wayfinding/#qr-lhc (routes back to Main Gate 1 and Zanskar Hostel)
 
 
 Built one layer at a time, following the agreed architecture:
@@ -44,7 +45,7 @@ then open http://localhost:8000
 - `data/routes.geojson` – the same routes in real coordinates
 - `js/app.js` – the app: home + search, route preview (Step-free on/off), navigation (live GPS or simulated), arrival
 
-QR codes: open the app address ending in `#qr-gate` (Main Gate 1) or `#qr-zanskar` (Zanskar Hostel).
+QR codes: open the app address ending in `#qr-gate` (Main Gate 1) `#qr-zanskar` (Zanskar Hostel) or `#qr-lhc` (Lecture Hall Complex). Routes run both ways between the LHC and each start point.
 
 ### Updating the artwork
 Export the changed layer as SVG into `data/source-svg/`, then ask Claude to regenerate `data/artwork-svg.js`.

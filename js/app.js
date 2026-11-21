@@ -14,15 +14,18 @@
     road:     { c: '#B3261E', label: 'On the road' },
     footpath: { c: '#0072B2', label: 'Footpath' }
   };
-  const START = { gate: { name: 'Main Gate 1', qr: 'G-01' }, zanskar: { name: 'Zanskar Hostel', qr: 'Z-01' } };
+  const START = { gate: { name: 'Main Gate 1', qr: 'G-01' }, zanskar: { name: 'Zanskar Hostel', qr: 'Z-01' }, lhc: { name: 'Lecture Hall Complex', qr: 'L-01' } };
+  // routes drawn so far: to and from the Lecture Hall Complex
+  const canGo = (from, to) => from !== to && (from === 'lhc' || to === 'lhc') && !!START[from] && !!START[to];
   const DEST = [
     { id: 'lhc', name: 'Lecture Hall Complex', cat: 'Academic', al: 'lhc lecture halls classrooms', ready: true },
     { id: 'Main Building', cat: 'Offices' }, { id: 'Central Library', cat: 'Academic' }, { id: 'Central Workshop', cat: 'Academic' },
     { id: 'Textile Building', cat: 'Academic' }, { id: 'Synergy Building', cat: 'Academic' }, { id: 'Bharti School', cat: 'Academic' },
-    { id: 'IIT Hospital', cat: 'Medical' }, { id: 'Zanskar Hostel', cat: 'Hostels' }, { id: 'SAC Complex', cat: 'Sports & culture' }
-  ].map(d => ({ name: d.name || d.id, al: '', ready: false, ...d }));
-  const CATS = ['All', 'Offices', 'Academic', 'Medical', 'Hostels', 'Sports & culture'];
-  const CI = { Academic: 'hall', Offices: 'building', Medical: 'cross', Hostels: 'bed', 'Sports & culture': 'ball' };
+    { id: 'IIT Hospital', cat: 'Medical' }, { id: 'zanskar', name: 'Zanskar Hostel', cat: 'Hostels', al: 'hostel' }, { id: 'SAC Complex', cat: 'Sports & culture' },
+    { id: 'gate', name: 'Main Gate 1', cat: 'Gates', al: 'main gate entrance exit gate 1' }
+  ].map(d => ({ name: d.name || d.id, al: '', ...d }));
+  const CATS = ['All', 'Offices', 'Academic', 'Medical', 'Hostels', 'Sports & culture', 'Gates'];
+  const CI = { Academic: 'hall', Offices: 'building', Medical: 'cross', Hostels: 'bed', 'Sports & culture': 'ball', Gates: 'flag' };
   const store = { get(k, d) { try { const v = localStorage.getItem('iitd.' + k); return v == null ? d : v; } catch (e) { return d; } },
                   set(k, v) { try { localStorage.setItem('iitd.' + k, v); } catch (e) {} } };
   const S = { screen: 'home', from: 'gate', to: null, prof: store.get('prof', 'wheelchair'), R: null, pos: 0, play: false, mult: 8,
@@ -70,8 +73,10 @@
     for (const pc of raw) { const last = pieces[pieces.length - 1];
       if (last && !pc.turn && (pc.kind === last.kind || pc.s1 - pc.s0 < 3)) last.s1 = pc.s1; else pieces.push({ ...pc }); }
     const r5 = m => Math.max(5, Math.round(m / 5) * 5);
-    const steps = to === 'lhc' && prof === 'pedestrian', destName = DEST.find(d => d.id === to).name;
-    const list = [{ icon: 'start', text: `Start at ${START[from].name}` }], man = [];
+    const ped = prof === 'pedestrian', steps = to === 'lhc' && ped, destName = DEST.find(d => d.id === to).name;
+    const leave = from === 'lhc' ? (ped ? 'Leave by the main entrance – 7 steps' : 'Leave by the ramp entrance (south-west) – step-free') : '';
+    const endSub = to === 'lhc' ? (ped ? 'Main entrance – 7 steps' : 'Ramp entrance – step-free') : '';
+    const list = [{ icon: 'start', text: `Start at ${START[from].name}`, sub: leave }], man = [];
     // a short red section with footpath on both sides is a road crossing, not a stretch along the road
     const isCross = i => { const pc = pieces[i]; return pc.kind === 'road' && pc.s1 - pc.s0 <= 25
       && (!pieces[i - 1] || pieces[i - 1].kind !== 'road') && (!pieces[i + 1] || pieces[i + 1].kind !== 'road'); };
@@ -99,8 +104,8 @@
         text: k === 'steep' ? 'Steep section ahead' : k === 'road' ? 'Road section ahead' : 'Back onto the footpath',
         sub: k === 'road' ? `Keep to the edge · ${len} m` : k === 'steep' ? `Take it slowly · ${len} m` : `${len} m` });
     });
-    list.push({ icon: 'flag', text: `Arrive at ${destName}`, sub: steps ? 'Main entrance – 7 steps' : prof === 'wheelchair' ? 'Ramp entrance – step-free' : '' });
-    man.push({ s: total, icon: 'flag', text: `Arrive at ${destName}`, sub: steps ? 'Main entrance – 7 steps' : 'Ramp entrance – step-free', arrive: true });
+    list.push({ icon: 'flag', text: `Arrive at ${destName}`, sub: endSub });
+    man.push({ s: total, icon: 'flag', text: `Arrive at ${destName}`, sub: endSub, arrive: true });
     const by = {}; for (let i = 1; i < P.length; i++) by[P[i].kind] = (by[P[i].kind] || 0) + P[i].s - P[i - 1].s;
     return { prof, from, to, P, total, at, kindAt, list, man, by, crossings, alongRoad: Math.max(0, (by.road || 0) - crossM), steps, destName,
       ll: d => API.svgToLngLat(at(d)),
@@ -160,7 +165,8 @@
     map.fitBounds([[Math.min(...lo), Math.min(...la)], [Math.max(...lo), Math.max(...la)]],
       { bearing: map.getBearing(), padding: { top: 70, bottom: sheetH() + 30, left: 40, right: 76 }, duration: animate ? dur(600) : 0, maxZoom: 18 });
   }
-  function camHome(animate) { const G = ALL.wheelchair; fitTo([startLL(), API.svgToLngLat(G.nodes[G.places.lhc.node])], animate); }
+  function camHome(animate) { const G = ALL.wheelchair, at = k => API.svgToLngLat(G.nodes[G.places[k].node]);
+    fitTo(S.from === 'lhc' ? ['lhc', 'gate', 'zanskar'].map(at) : [startLL(), at('lhc')], animate); }
   function camRoute(animate) { const R = S.R; fitTo(R.P.filter((_, i) => i % 3 === 0).map(q => API.svgToLngLat(q.p)).concat([R.ll(R.total)]), animate); }
   function camNav(snap) {
     const R = S.R, b = S.navNorth ? 0 : R.bearing(S.pos);
@@ -336,7 +342,7 @@
       if (R.alongRoad >= 5) c.push(['road', `Road ${Math.round(R.alongRoad / 10) * 10} m`, 'alert']);
       if (R.crossings) c.push(['road', R.crossings === 1 ? '1 road crossing' : `${R.crossings} road crossings`, 'warn']);
       if (!R.by.road) c.push(['chair', 'Footpath all the way', 'ok']);
-    } else { c.push(['walk', 'Footpath all the way', 'ok']); c.push(['stairs', 'Entrance: 7 steps', 'warn']); }
+    } else { c.push(['walk', 'Footpath all the way', 'ok']); c.push(['stairs', R.from === 'lhc' ? 'LHC exit: 7 steps' : 'Entrance: 7 steps', 'warn']); }
     return `<ul class="strip" aria-label="On this route">${c.map(([i, t, k]) => `<li class="${k}">${I(i, 'sm')}${t}</li>`).join('')}</ul>`;
   }
   let lastScreen = null;
@@ -382,7 +388,7 @@
     } else if (S.screen === 'arrived') {
       const R = S.R;
       sh.innerHTML = `<div class="grab" aria-hidden="true"></div><div class="arrok" aria-hidden="true">${I('check')}</div><h1 tabindex="-1">You've arrived</h1>
-        <p class="arr"><b>${esc(R.destName)}</b><br>${R.steps ? 'Use the main entrance ahead of you – it has 7 steps.' : 'Use the wheelchair accessible ramp ahead of you to enter the building.'}</p>
+        <p class="arr"><b>${esc(R.destName)}</b>${R.to !== 'lhc' ? '' : `<br>${R.steps ? 'Use the main entrance ahead of you – it has 7 steps.' : 'Use the wheelchair accessible ramp ahead of you to enter the building.'}`}</p>
         <button class="go wide" data-act="done">Done</button><button class="more" data-act="another">Plan another route</button>`;
     }
     fitControls();
@@ -416,8 +422,8 @@
 
   function results() {
     const q = S.q.trim().toLowerCase();
-    const list = DEST.filter(d => (S.cat === 'All' || d.cat === S.cat) && (!q || (d.name + ' ' + d.al + ' ' + d.cat).toLowerCase().includes(q)))
-      .sort((a, b) => b.ready - a.ready);
+    const list = DEST.filter(d => d.id !== S.from && (S.cat === 'All' || d.cat === S.cat) && (!q || (d.name + ' ' + d.al + ' ' + d.cat).toLowerCase().includes(q)))
+      .map(d => ({ ...d, ready: canGo(S.from, d.id) })).sort((a, b) => b.ready - a.ready);
     if (!list.length) return `<li class="empty">No place matches “${esc(S.q)}”.</li>`;
     return list.map(d => {
       if (!d.ready) return `<li><div class="item off" aria-label="${esc(d.name)}, directions coming soon"><span class="badge">${I(CI[d.cat] || 'building')}</span><span><span class="nm">${esc(d.name)}</span><span class="sb">${d.cat} · Directions coming soon</span></span></div></li>`;
@@ -505,7 +511,7 @@
       <p class="hint">Scanning the QR code at a start point sets this for you.</p>`;
     $('#fromModal').hidden = false; $('#fromTitle').focus();
   }
-  function setFrom(k) { S.from = k; $('#fromModal').hidden = true; if (S.to) pick(S.to); else { render(); camHome(true); } }
+  function setFrom(k) { S.from = k; $('#fromModal').hidden = true; if (S.to && canGo(k, S.to)) pick(S.to); else if (S.to) home(); else { render(); camHome(true); } }
   function home() { S.to = null; S.R = null; S.homeOpen = false; S.q = ''; S.cat = 'All'; drawRoute(); S.screen = 'home'; render(); camHome(true); }
   document.addEventListener('click', e => {
     const t = e.target.closest('[data-act]');
