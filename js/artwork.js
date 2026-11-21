@@ -47,7 +47,7 @@
     const z = C((g.re * T.a.re + g.im * T.a.im) / d, (g.im * T.a.re - g.re * T.a.im) / d);
     return [z.re, -z.im];
   };
-  window.ARTWORK_API = { info, corners, svgToLngLat, lngLatToSvg, pxPerUnit: () => {
+  window.ARTWORK_API = { info, corners, svgToLngLat, lngLatToSvg, setLabelScale: k => setLabelScale(k), pxPerUnit: () => {
     const p = map.project(svgToLngLat([0, 0])), q = map.project(svgToLngLat([100, 0])); return Math.hypot(q.x - p.x, q.y - p.y) / 100; } };
 
   // ---------- the overlay: one <svg> covering the map, artwork groups inside ----------
@@ -76,16 +76,19 @@
   // Turn names, labels and icons so they always read upright, whatever way the map faces.
   // (Direction arrows and map features such as ramps and crossings turn with the map on purpose.)
   const uprightAngle = {};
+  let labelScale = 1;                                         // accessibility: bigger names and icons on the map
+  const grow = (x, y) => labelScale === 1 ? '' : `translate(${x} ${y}) scale(${labelScale}) translate(${-x} ${-y}) `;
   function keepReadable(id, theta) {
     if (!id || (uprightAngle[id] !== undefined && Math.abs(uprightAngle[id] - theta) < 0.05)) return;
     uprightAngle[id] = theta;
     const K = keepUpright[id];
-    for (const u of K.up) u.el.setAttribute('transform', `rotate(${(-theta).toFixed(3)} ${u.x} ${u.y}) ${u.t0}`);
+    for (const u of K.up) u.el.setAttribute('transform', `rotate(${(-theta).toFixed(3)} ${u.x} ${u.y}) ${grow(u.x, u.y)}${u.t0}`);
     for (const l of K.line) {
       const t = ((l.a + theta) % 360 + 540) % 360 - 180;     // angle the label would have on screen
-      l.el.setAttribute('transform', (Math.abs(t) > 90 ? `rotate(180 ${l.x} ${l.y}) ` : '') + l.t0);
+      l.el.setAttribute('transform', (Math.abs(t) > 90 ? `rotate(180 ${l.x} ${l.y}) ` : '') + grow(l.x, l.y) + l.t0);
     }
   }
+  function setLabelScale(k) { k = Math.max(1, Math.min(2, k)); if (k === labelScale) return; labelScale = k; for (const id in uprightAngle) delete uprightAngle[id]; place(); }
   window.ARTWORK_ROOT = root;                                // later steps draw routes in artwork units here
   const cc = map.getCanvasContainer();
   cc.insertBefore(overlay, cc.querySelector('canvas').nextSibling);   // above the base map, below markers

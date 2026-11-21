@@ -212,12 +212,98 @@
     $('#keyModal').hidden = false; $('#keyTitle').focus();
   }
 
+  // ---------------------------------------------------------------- accessibility settings (saved on this phone)
+  const A11Y_DEF = { fs: 100, ls: 0, lh: 1.5, hc: false, gray: false, neg: false, light: true };
+  const A11Y_RNG = { fs: [100, 200, 10], ls: [0, 3, 0.5], lh: [1.2, 2.4, 0.1] };
+  const A11Y = Object.assign({}, A11Y_DEF, (() => {
+    let saved = {}; try { saved = JSON.parse(store.get('a11y', '{}')) || {}; } catch (e) {}
+    const first = Object.keys(saved).length ? {} : { hc: !!(window.matchMedia && matchMedia('(prefers-contrast: more)').matches) };
+    return Object.assign(first, saved);
+  })());
+  const fmtA = { fs: v => `${v}%`, ls: v => `${v.toFixed(1)} px`, lh: v => `${v.toFixed(1)}×` };
+  const sayA = { fs: v => `${v} percent`, ls: v => `${v} pixels`, lh: v => `${v.toFixed(1)} times` };
+  function clampA(k, v) { const [lo, hi, st] = A11Y_RNG[k]; v = Math.round(v / st) * st; return +Math.min(hi, Math.max(lo, v)).toFixed(2); }
+  function applyA11y(save) {
+    const h = document.documentElement, a = A11Y;
+    h.classList.toggle('light', a.light); h.classList.toggle('hc', a.hc);
+    h.style.setProperty('--fz', a.fs / 100);
+    h.style.setProperty('--ls', a.ls ? a.ls + 'px' : 'normal');
+    h.classList.toggle('lhset', a.lh !== A11Y_DEF.lh); h.style.setProperty('--lh', a.lh);
+    const f = []; if (a.gray) f.push('grayscale(1)'); if (a.neg) f.push('invert(1) hue-rotate(180deg)');
+    h.style.filter = f.join(' ');
+    if (window.ARTWORK_API && ARTWORK_API.setLabelScale) ARTWORK_API.setLabelScale(1 + (a.fs - 100) / 100 * 0.6);
+    $('#accessBtn').classList.toggle('on', Object.keys(A11Y_DEF).some(k => a[k] !== A11Y_DEF[k]));
+    if (save) store.set('a11y', JSON.stringify(a));
+    syncA11y(); fitControls();
+  }
+  const a11ySlider = (k, label, less, more) => {
+    const [lo, hi, st] = A11Y_RNG[k];
+    return `<div class="a11yrow"><div class="a11ylab"><label for="a11y-${k}">${label}</label><output id="a11y-${k}-v" for="a11y-${k}"></output></div>
+      <div class="a11yctl"><button class="a11ystep" data-act="a11yStep" data-k="${k}" data-d="-1" aria-label="${less}"><span aria-hidden="true">−</span></button>
+      <input type="range" id="a11y-${k}" data-k="${k}" min="${lo}" max="${hi}" step="${st}">
+      <button class="a11ystep" data-act="a11yStep" data-k="${k}" data-d="1" aria-label="${more}"><span aria-hidden="true">+</span></button></div></div>`;
+  };
+  const a11ySwitch = (k, icon, label, desc) => `<button class="a11ysw" role="switch" aria-checked="false" data-act="a11yToggle" data-k="${k}">
+      <span class="swic" aria-hidden="true">${I(icon)}</span><span class="swt"><b>${label}</b><small>${desc}</small></span><span class="swk" aria-hidden="true"></span></button>`;
+  function buildA11y() {
+    $('#a11yPanel').innerHTML = `<div class="a11yhead"><span class="a11yic" aria-hidden="true">${I('access')}</span>
+      <div class="a11yht"><h2 id="a11yTitle" tabindex="-1">Accessibility settings</h2><p>Make text and colours easier to see. Changes apply straight away and are saved on this phone.</p></div>
+      <button class="x" data-act="closeA11y" aria-label="Close accessibility settings">${I('close')}</button></div>
+      <div class="a11ybody">
+        <h3 class="a11ysec"><span aria-hidden="true">${I('text')}</span>Text</h3>
+        ${a11ySlider('fs', 'Text size', 'Smaller text', 'Larger text')}
+        ${a11ySlider('ls', 'Letter spacing', 'Less letter spacing', 'More letter spacing')}
+        ${a11ySlider('lh', 'Line height', 'Less line height', 'More line height')}
+        <h3 class="a11ysec"><span aria-hidden="true">${I('eye')}</span>Visual options</h3>
+        ${a11ySwitch('hc', 'contrast', 'High contrast', 'Stronger outlines, darker text and bold map labels')}
+        ${a11ySwitch('gray', 'moon', 'Grayscale', 'Shows everything in shades of grey')}
+        ${a11ySwitch('neg', 'invert', 'Negative contrast', 'Inverts the colours: light on dark')}
+        ${a11ySwitch('light', 'sun', 'Light background', 'White panels. Turn off for dark panels')}
+        <div class="a11yfoot"><button class="a11yreset" data-act="a11yReset">${I('reset')}Reset to default</button><button class="go a11ydone" data-act="closeA11y">Done</button></div>
+        <p class="sr" id="a11yMsg" aria-live="polite"></p>
+      </div>`;
+  }
+  function syncA11y() {
+    if (!$('#a11y-fs')) return;
+    for (const k of Object.keys(A11Y_RNG)) {
+      const i = $('#a11y-' + k), [lo, hi] = A11Y_RNG[k], v = A11Y[k];
+      if (+i.value !== v) i.value = v;
+      i.setAttribute('aria-valuetext', sayA[k](v)); i.style.setProperty('--p', ((v - lo) / (hi - lo) * 100) + '%');
+      $('#a11y-' + k + '-v').textContent = fmtA[k](v);
+      document.querySelectorAll(`.a11ystep[data-k="${k}"]`).forEach(b => { b.disabled = b.dataset.d < 0 ? v <= lo : v >= hi; });
+    }
+    document.querySelectorAll('.a11ysw').forEach(b => b.setAttribute('aria-checked', String(!!A11Y[b.dataset.k])));
+  }
+  let a11yOpener = null;
+  function openA11y() {
+    if (!$('#a11y-fs')) buildA11y();
+    a11yOpener = document.activeElement; syncA11y();
+    $('#a11yModal').hidden = false; $('#a11yTitle').focus();
+  }
+  function closeA11y() {
+    if ($('#a11yModal').hidden) return;
+    $('#a11yModal').hidden = true;
+    const back = a11yOpener && document.body.contains(a11yOpener) && a11yOpener.offsetParent ? a11yOpener : $('#accessBtn');
+    if (back && back.focus) back.focus();
+  }
+  document.addEventListener('input', e => {
+    const i = e.target.closest('#a11yPanel input[type=range]'); if (!i) return;
+    A11Y[i.dataset.k] = clampA(i.dataset.k, +i.value); applyA11y(true);
+  });
+  document.addEventListener('keydown', e => {                 // keep keyboard focus inside the open settings panel
+    if (e.key !== 'Tab' || $('#a11yModal').hidden) return;
+    const f = [...$('#a11yPanel').querySelectorAll('button:not([disabled]), input, [tabindex="-1"]')].filter(x => x.offsetParent);
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
   // ---------------------------------------------------------------- layers (one button, right edge)
   function setView(v) {
     S.view = v; const btn = document.querySelector(`[data-view="${v}"]`); if (btn) btn.click();
     document.querySelectorAll('[data-act=view]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.v === v)));
     $('#layersBtn').classList.toggle('on', v !== 'standard'); $('#layersMenu').hidden = true; fitControls();
-    const ab = $('#accessBtn'); ab.classList.toggle('on', v === 'accessibility'); ab.setAttribute('aria-pressed', String(v === 'accessibility')); $('#layersBtn').setAttribute('aria-expanded', 'false');
+    $('#layersBtn').setAttribute('aria-expanded', 'false');
   }
 
   // ---------------------------------------------------------------- screens
@@ -406,7 +492,7 @@
   function home() { S.to = null; S.R = null; S.homeOpen = false; S.q = ''; S.cat = 'All'; drawRoute(); S.screen = 'home'; render(); camHome(true); }
   document.addEventListener('click', e => {
     const t = e.target.closest('[data-act]');
-    if (!t) { if (e.target.id === 'fromModal') $('#fromModal').hidden = true; if (e.target.id === 'keyModal') $('#keyModal').hidden = true;
+    if (!t) { if (e.target.id === 'fromModal') $('#fromModal').hidden = true; if (e.target.id === 'keyModal') $('#keyModal').hidden = true; if (e.target.id === 'a11yModal') closeA11y();
       if (!e.target.closest('#layersMenu')) { $('#layersMenu').hidden = true; $('#layersBtn').setAttribute('aria-expanded', 'false'); fitControls(); } return; }
     const a = t.dataset.act;
     if (a === 'pick') pick(t.dataset.id);
@@ -430,7 +516,11 @@
     else if (a === 'done') { home(); if (S.orient === 'drawn') map.easeTo({ bearing: drawnBearing(), duration: dur(500) }); }
     else if (a === 'compass') compassTap();
     else if (a === 'key') openKey();
-    else if (a === 'access') setView(S.view === 'accessibility' ? 'standard' : 'accessibility');
+    else if (a === 'access') openA11y();
+    else if (a === 'closeA11y') closeA11y();
+    else if (a === 'a11yToggle') { const k = t.dataset.k; A11Y[k] = !A11Y[k]; applyA11y(true); }
+    else if (a === 'a11yStep') { const k = t.dataset.k; A11Y[k] = clampA(k, A11Y[k] + (+t.dataset.d) * A11Y_RNG[k][2]); applyA11y(true); }
+    else if (a === 'a11yReset') { Object.assign(A11Y, A11Y_DEF); applyA11y(true); $('#a11yMsg').textContent = 'Settings reset to default'; }
     else if (a === 'another') { home(); S.homeOpen = true; render(); const q = $('#q'); if (q) q.focus(); }
     else if (a === 'closeKey') $('#keyModal').hidden = true;
     else if (a === 'layers') { const m = $('#layersMenu'); m.hidden = !m.hidden; t.setAttribute('aria-expanded', String(!m.hidden)); e.stopPropagation(); fitControls(); }
@@ -439,6 +529,7 @@
   document.addEventListener('input', e => { if (e.target.id === 'q') { S.q = e.target.value; $('#results').innerHTML = results(); } });
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter' && e.target.id === 'q') { const b = document.querySelector('#results button.item'); if (b) b.click(); }
+    if (e.key === 'Escape' && !$('#a11yModal').hidden) { closeA11y(); return; }
     if (e.key === 'Escape') { if (S.screen === 'home' && S.homeOpen && $('#keyModal').hidden && $('#fromModal').hidden) { S.homeOpen = false; render(); } $('#keyModal').hidden = true; $('#fromModal').hidden = true; $('#layersMenu').hidden = true; }
   });
   map.on('dragstart', () => { if (S.screen === 'nav') S.follow = false; });
@@ -463,7 +554,9 @@
   window.addEventListener('hashchange', () => { if (fromHash()) { if (S.screen === 'nav') leaveNav(); home(); } });
   fromHash();
   render();
+  applyA11y(false);
+  (function waitArt() { if (window.ARTWORK_API) applyA11y(false); else setTimeout(waitArt, 300); })();
   setTimeout(() => camHome(false), 50);
   requestAnimationFrame(frame);
-  window.__app = { S, buildRoute, pick, startNav, updateNav, camNav, openKey, setView };
+  window.__app = { S, buildRoute, pick, startNav, updateNav, camNav, openKey, setView, openA11y, A11Y, applyA11y };
 })();

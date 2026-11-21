@@ -60,3 +60,12 @@ Map data © OpenStreetMap contributors. Vector tiles: OpenFreeMap.
 - Navigation: lighter card with voice button, early warnings for steep and road sections, calm off-route prompt with "Show the way back", live GPS starts automatically.
 - Accessibility: Go button darkened to #C2570C (4.5:1), dark icons on orange/blue tiles, dotted pattern on steep and dashed on road sections, labelled controls, focus moves to each new screen, reduced motion respected.
 - Design-team tools: add `#tools` to the address. Test mode there simulates the walk instead of GPS.
+
+## Accessibility settings
+
+The accessibility button (top right, under the compass) opens a settings panel. Everything applies immediately and is saved on the phone.
+
+- **Text size** 100–200% (panels and map labels), **Letter spacing** 0–3 px, **Line height** 1.2–2.4×, each with − / + buttons as well as a slider.
+- **High contrast**: stronger outlines, darker text, bold map labels. Turns on by itself the first time if the phone's Increase Contrast setting is on.
+- **Grayscale**, **Negative contrast** (inverted colours) and **Light background** (on by default; off gives dark panels).
+- **Reset to default** restores everything. The accessibility map layer is in the Layers menu.
