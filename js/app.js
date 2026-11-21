@@ -72,20 +72,29 @@
     const r5 = m => Math.max(5, Math.round(m / 5) * 5);
     const steps = to === 'lhc' && prof === 'pedestrian', destName = DEST.find(d => d.id === to).name;
     const list = [{ icon: 'start', text: `Start at ${START[from].name}` }], man = [];
+    // a short red section with footpath on both sides is a road crossing, not a stretch along the road
+    const isCross = i => { const pc = pieces[i]; return pc.kind === 'road' && pc.s1 - pc.s0 <= 25
+      && (!pieces[i - 1] || pieces[i - 1].kind !== 'road') && (!pieces[i + 1] || pieces[i + 1].kind !== 'road'); };
+    let crossings = 0, crossM = 0;
     pieces.forEach((pc, i) => {
-      const len = r5(pc.s1 - pc.s0), prevK = i ? pieces[i - 1].kind : null, k = pc.kind;
+      const len = r5(pc.s1 - pc.s0), prevK = i ? pieces[i - 1].kind : null, k = pc.kind, cross = isCross(i);
+      if (cross) { crossings++; crossM += pc.s1 - pc.s0; }
+      const toward = `To the footpath towards ${destName}`;
       const dir = pc.turn && i ? (pc.turn.t > 0 ? 'right' : 'left') : null;
       const turnTxt = dir ? `Turn ${Math.abs(pc.turn.t) > 2 ? 'sharp ' : ''}${dir}` : null;
       let icon = 'up', text, sub = '';
       if (k === 'steep') { icon = 'steep'; text = `Steep section, ${len} m`; sub = 'Go slowly; ask for help if needed'; }
+      else if (cross) { icon = 'road'; text = 'Cross the road'; sub = `${toward} · about ${len} m`; }
       else if (k === 'road') { icon = 'road'; text = `Use the road for ${len} m`; sub = 'No accessible footpath here; keep to the edge'; }
       else if (k === 'smooth' && prevK && prevK !== 'smooth') { icon = 'smooth'; text = `Back on the footpath, ${len} m`; }
       else { text = `Continue ${len} m`; sub = KIND[k].label; }
       if (turnTxt) list.push({ icon: dir, text: turnTxt });
       list.push({ icon, text, sub });
       if (i === 0) man.push({ s: 0, icon: 'up', text: `Head along the ${KIND[k].label.toLowerCase()}`, sub: `${len} m` });
+      else if (turnTxt && cross) man.push({ s: pc.s0, icon: dir, kind: k, cross: true, text: `${turnTxt} and cross the road`, sub: toward });
       else if (turnTxt) man.push({ s: pc.s0, icon: dir, text: turnTxt, kind: k,
         sub: k === 'steep' ? `Then steep for ${len} m – go slowly` : k === 'road' ? `Then use the road for ${len} m` : `Then ${len} m` });
+      else if (cross) man.push({ s: pc.s0, icon: 'road', kind: k, cross: true, text: 'Cross the road', sub: `${toward} · ${len} m` });
       else if (k !== prevK || k !== 'smooth') man.push({ s: pc.s0, icon, kind: k,
         text: k === 'steep' ? 'Steep section ahead' : k === 'road' ? 'Road section ahead' : 'Back onto the footpath',
         sub: k === 'road' ? `Keep to the edge · ${len} m` : k === 'steep' ? `Take it slowly · ${len} m` : `${len} m` });
@@ -93,7 +102,7 @@
     list.push({ icon: 'flag', text: `Arrive at ${destName}`, sub: steps ? 'Main entrance – 7 steps' : prof === 'wheelchair' ? 'Ramp entrance – step-free' : '' });
     man.push({ s: total, icon: 'flag', text: `Arrive at ${destName}`, sub: steps ? 'Main entrance – 7 steps' : 'Ramp entrance – step-free', arrive: true });
     const by = {}; for (let i = 1; i < P.length; i++) by[P[i].kind] = (by[P[i].kind] || 0) + P[i].s - P[i - 1].s;
-    return { prof, from, to, P, total, at, kindAt, list, man, by, steps, destName,
+    return { prof, from, to, P, total, at, kindAt, list, man, by, crossings, alongRoad: Math.max(0, (by.road || 0) - crossM), steps, destName,
       ll: d => API.svgToLngLat(at(d)),
       bearing: d => { const a = API.svgToLngLat(at(d - 4)), b = API.svgToLngLat(at(d + 6));
         const k = Math.cos(a[1] * Math.PI / 180); return (Math.atan2((b[0] - a[0]) * k, b[1] - a[1]) * 180 / Math.PI + 360) % 360; } };
@@ -317,7 +326,8 @@
     if (S.prof === 'wheelchair') {
       c.push(['check', 'No steps', 'ok']);
       if (R.by.steep) c.push(['steep', `Steep ${Math.round(R.by.steep / 5) * 5} m`, 'warn']);
-      if (R.by.road) c.push(['road', `Road ${Math.round(R.by.road / 10) * 10} m`, 'alert']);
+      if (R.alongRoad >= 5) c.push(['road', `Road ${Math.round(R.alongRoad / 10) * 10} m`, 'alert']);
+      if (R.crossings) c.push(['road', R.crossings === 1 ? '1 road crossing' : `${R.crossings} road crossings`, 'warn']);
       if (!R.by.road) c.push(['chair', 'Footpath all the way', 'ok']);
     } else { c.push(['walk', 'Footpath all the way', 'ok']); c.push(['stairs', 'Entrance: 7 steps', 'warn']); }
     return `<ul class="strip" aria-label="On this route">${c.map(([i, t, k]) => `<li class="${k}">${I(i, 'sm')}${t}</li>`).join('')}</ul>`;

@@ -39,7 +39,8 @@ then open http://localhost:8000
 - `data/artwork-svg.js` – your five SVG layers, prepared for the map (drawn live as vectors)
 - `data/source-svg/` – your original SVGs
 - `data/source-svg/Layer_7_wheelchair_routes.svg`, `Layer_8_pedestrian_routes.svg` – your hand-drawn routes
-- `data/routes.js` – your routes as a small network (Layer 3 frame: Layer 7 + 31.42 units in x)
+- `data/routes.js` – your routes as a small network (wheelchair from the revised Layer 7, same frame as Layer 3; pedestrian from Layer 8)
+- Short red sections (25 m or less) with footpath on both sides are read as **road crossings**: the steps and navigation say "Cross the road" towards the destination, and the summary counts crossings apart from stretches along the road.
 - `data/routes.geojson` – the same routes in real coordinates
 - `js/app.js` – the app: home + search, route preview (Step-free on/off), navigation (live GPS or simulated), arrival
 
