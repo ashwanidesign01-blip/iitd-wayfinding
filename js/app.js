@@ -174,7 +174,7 @@
   }
   map.on('rotate', updateCompass); map.on('move', updateCompass);
   function compassTap() {
-    if (S.screen === 'nav') { S.navNorth = !S.navNorth; S.follow = true; $('#recenter').hidden = true; camNav(true); }
+    if (S.screen === 'nav') { S.navNorth = !S.navNorth; S.follow = true; camNav(true); }
     else { S.orient = S.orient === 'north' ? 'drawn' : 'north'; map.easeTo({ bearing: S.orient === 'north' ? 0 : drawnBearing(), duration: dur(500) }); }
     updateCompass();
   }
@@ -241,7 +241,7 @@
     document.body.dataset.screen = S.screen; document.body.classList.toggle('searching', S.screen === 'home' && S.homeOpen);
     const sh = $('#sheet'); sh.className = 'sheet ' + S.screen;
     $('#navcard').hidden = S.screen !== 'nav';
-    $('#recenter').hidden = !((S.screen === 'nav' && !S.follow) || S.screen === 'home' || S.screen === 'preview');
+    $('#recenter').hidden = !(S.screen === 'nav' || S.screen === 'home' || S.screen === 'preview');
     if (S.screen === 'home' && !S.homeOpen) {
       sh.className = 'sheet home mini';
       sh.innerHTML = `<h1 class="sr">Where to?</h1><button class="pillsearch" data-act="openSearch" aria-label="Where to? Search a building or place">${I('search')}<span>Where to?</span></button>`;
@@ -268,7 +268,7 @@
         <button class="more" data-act="steps" aria-expanded="${S.allSteps}">${S.allSteps ? 'Hide steps' : `See all ${R.list.length} steps`}</button>
         ${S.allSteps ? `<ol class="dirs" aria-label="Directions">${R.list.map(s => `<li><span class="di di-${s.icon}" aria-hidden="true">${I(icon(s.icon))}</span><span><b>${esc(s.text)}</b>${s.sub ? `<br><small>${esc(s.sub)}</small>` : ''}</span></li>`).join('')}</ol>` : ''}`;
     } else if (S.screen === 'nav') {
-      sh.innerHTML = `<div class="navbar"><div class="navstats"><b id="remT"></b><span id="remD"></span><div class="bar" aria-hidden="true"><i id="barI"></i></div></div>
+      sh.innerHTML = `<div class="navbar"><div class="navstats"><b id="remT"></b><span id="remD"></span></div>
           <button class="go end" data-act="end">End</button></div>
         <p class="gpsline" id="gpsline" role="status"></p>
         <div id="offroute" class="offroute" hidden role="alert"><b>You're off the route.</b> Head back to the coloured path.<button class="mini wide" data-act="wayback">Show the way back</button></div>
@@ -310,7 +310,8 @@
       <button class="vbtn" data-act="voice" aria-pressed="${S.voice}" aria-label="Voice guidance ${S.voice ? 'on' : 'off'}">${I(S.voice ? 'voice' : 'mute')}</button>`;
     if (card.dataset.k !== dist + m.text) { card.innerHTML = html; card.dataset.k = dist + m.text; }
     card.classList.toggle('soon', soon);
-    const t = $('#remT'); if (t) { t.textContent = fmtT(rem, S.prof); $('#remD').textContent = fmtM(rem); $('#barI').style.width = (S.pos / R.total * 100) + '%'; }
+    const t = $('#remT'); if (t) { t.textContent = fmtT(rem, S.prof); $('#remD').textContent = `${fmtM(rem)} left · ${R.destName}`; }
+    document.documentElement.style.setProperty('--navcard-h', card.offsetHeight + 'px');
     const key = R.man.indexOf(m);
     if (!S.said['a' + key] && S.pos > 1) { S.said['a' + key] = 1; speak(`In ${Math.max(5, Math.round(left / 5) * 5)} metres, ${say(m)}`); }
     if (soon && left > 15 && !S.said['w' + key]) { S.said['w' + key] = 1; speak(`${m.text} in ${Math.round(left / 5) * 5} metres`); }
@@ -395,10 +396,10 @@
     else if (a === 'steps') { S.allSteps = !S.allSteps; render(); }
     else if (a === 'go') startNav();
     else if (a === 'end') stopNav('preview');
-    else if (a === 'play') { S.play = !S.play; if (S.play && S.pos >= S.R.total - 2) S.pos = 0; S.follow = true; t.textContent = S.play ? 'Pause' : 'Play'; $('#recenter').hidden = true; }
+    else if (a === 'play') { S.play = !S.play; if (S.play && S.pos >= S.R.total - 2) S.pos = 0; S.follow = true; t.textContent = S.play ? 'Pause' : 'Play'; }
     else if (a === 'speed') { S.mult = +t.dataset.v; document.querySelectorAll('[data-act=speed]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === S.mult))); }
     else if (a === 'voice') { S.voice = !S.voice; store.set('voice', S.voice ? '1' : '0'); $('#navcard').dataset.k = ''; updateNav(); if (S.voice) speak('Voice guidance on'); }
-    else if (a === 'recenter') { if (S.screen === 'preview') camRoute(true); else if (S.screen === 'home') { if (S.raw) map.easeTo({ center: S.raw.ll, zoom: Math.max(map.getZoom(), 17), duration: dur(600) }); else camHome(true); } else { S.follow = true; t.hidden = true; camNav(true); } }
+    else if (a === 'recenter') { if (S.screen === 'preview') camRoute(true); else if (S.screen === 'home') { if (S.raw) map.easeTo({ center: S.raw.ll, zoom: Math.max(map.getZoom(), 17), duration: dur(600) }); else camHome(true); } else { S.follow = true; camNav(true); } }
     else if (a === 'wayback') wayBack();
     else if (a === 'again') { S.pos = 0; S.screen = 'preview'; render(); camRoute(true); }
     else if (a === 'done') { home(); if (S.orient === 'drawn') map.easeTo({ bearing: drawnBearing(), duration: dur(500) }); }
@@ -415,7 +416,7 @@
     if (e.key === 'Enter' && e.target.id === 'q') { const b = document.querySelector('#results button.item'); if (b) b.click(); }
     if (e.key === 'Escape') { if (S.screen === 'home' && S.homeOpen && $('#keyModal').hidden && $('#fromModal').hidden) { S.homeOpen = false; render(); } $('#keyModal').hidden = true; $('#fromModal').hidden = true; $('#layersMenu').hidden = true; }
   });
-  map.on('dragstart', () => { if (S.screen === 'nav') { S.follow = false; $('#recenter').hidden = false; } });
+  map.on('dragstart', () => { if (S.screen === 'nav') S.follow = false; });
   // test mode lives in the design-team tools panel (open with #tools)
   const tm = $('#testMode'); if (tm) { tm.checked = S.test; tm.addEventListener('change', () => { S.test = tm.checked; store.set('test', S.test ? '1' : '0'); }); }
 

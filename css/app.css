@@ -292,3 +292,22 @@ body[data-screen=preview] .edge{bottom:calc(var(--sheet-h) + 19px)}
 .L3c72,.L4c72{fill:url(#fpChev)!important}
 .L3c10,.L4c10{stroke:#3F8F4A!important;stroke-width:.42px!important}
 .L3c30,.L3c31,.L3c32,.L3c33,.L3c34,.L3c35,.L3c36,.L3c37,.L3c38,.L3c39,.L4c26,.L4c27,.L4c28,.L4c29,.L4c30,.L4c31,.L4c32,.L4c33,.L4c34,.L4c35,.L4c62{stroke:#333!important;stroke-width:.35px!important}
+
+/* Figma 05 Navigating (ready for dev) */
+.navcard{left:12px;right:12px;top:calc(15px + env(safe-area-inset-top));padding:14px;gap:12px;align-items:center;border-radius:20px;background:#262626}
+.navcard.soon{box-shadow:none;outline:3px solid #E69F00;outline-offset:-3px}
+.navcard .big{width:52px;height:52px;border-radius:14px}.navcard .big .ic{width:32px;height:32px}
+.navcard .in{color:#FFD9A0;font-size:13px;font-weight:600;letter-spacing:.02em;line-height:17px}
+.navcard h2{font-size:19px;font-weight:700;line-height:25px;margin:2px 0 0}
+.navcard p{font-size:14px;line-height:18px;color:#CFCFCF;margin:2px 0 0}
+.navcard .vbtn,.navcard .vbtn[aria-pressed=true]{width:44px;height:44px;border-radius:50%;background:#3F3F3F;color:#fff}
+body[data-screen=nav] .corner{top:calc(15px + env(safe-area-inset-top) + var(--navcard-h, 98px) + 20px);gap:8px}
+body[data-screen=nav] .edge #layersBtn{display:grid}
+body[data-screen=nav] .edge #keyBtn{order:-1}
+body[data-screen=nav] .edge{bottom:calc(var(--sheet-h) + 20px);gap:14px}
+.sheet.nav{padding:16px 20px calc(34px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0}
+.navbar{gap:12px}
+.navstats{display:flex;flex-direction:column;gap:2px}
+.navstats b{font-size:26px;line-height:34px;font-weight:700;margin:0}
+.navstats span{font-size:14px;line-height:18px;color:#CFCFCF}
+.go.end{min-width:0;min-height:52px;height:52px;padding:0 24px;border-radius:999px;background:#B3261E;color:#fff;font-size:17px;font-weight:700}
