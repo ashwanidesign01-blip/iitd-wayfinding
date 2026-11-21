@@ -87,8 +87,8 @@
       else if (turnTxt) man.push({ s: pc.s0, icon: dir, text: turnTxt, kind: k,
         sub: k === 'steep' ? `Then steep for ${len} m – go slowly` : k === 'road' ? `Then use the road for ${len} m` : `Then ${len} m` });
       else if (k !== prevK || k !== 'smooth') man.push({ s: pc.s0, icon, kind: k,
-        text: k === 'steep' ? `Steep section, ${len} m` : k === 'road' ? `Use the road, ${len} m` : 'Back onto the footpath',
-        sub: k === 'road' ? 'No accessible footpath – keep to the edge' : k === 'steep' ? 'Go slowly; ask for help if needed' : `${len} m` });
+        text: k === 'steep' ? 'Steep section ahead' : k === 'road' ? 'Road section ahead' : 'Back onto the footpath',
+        sub: k === 'road' ? `Keep to the edge · ${len} m` : k === 'steep' ? `Take it slowly · ${len} m` : `${len} m` });
     });
     list.push({ icon: 'flag', text: `Arrive at ${destName}`, sub: steps ? 'Main entrance – 7 steps' : prof === 'wheelchair' ? 'Ramp entrance – step-free' : '' });
     man.push({ s: total, icon: 'flag', text: `Arrive at ${destName}`, sub: steps ? 'Main entrance – 7 steps' : 'Ramp entrance – step-free', arrive: true });
