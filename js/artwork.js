@@ -57,7 +57,7 @@
   // Footpath patterns, so accessibility is never shown by colour alone (kept light so the route stays on top)
   const fdefs = document.createElementNS(NS, 'defs');
   fdefs.innerHTML = '<pattern id="fpHatch" patternUnits="userSpaceOnUse" width="1.3" height="1.3" patternTransform="rotate(45)"><rect width="1.3" height="1.3" fill="#F6DAD7"/><rect width="0.32" height="1.3" fill="#D46A62"/></pattern>'
-    + '<pattern id="fpChev" patternUnits="userSpaceOnUse" width="2" height="2"><rect width="2" height="2" fill="#F1C878"/><path d="M0.35 1.4L1 0.75L1.65 1.4" fill="none" stroke="#A8741C" stroke-width="0.18"/></pattern>';
+    + '<pattern id="fpChev" patternUnits="userSpaceOnUse" width="1.6" height="1.6"><rect width="1.6" height="1.6" fill="#F1C878"/><circle cx="0.4" cy="0.4" r="0.22" fill="#A8741C"/><circle cx="1.2" cy="1.2" r="0.22" fill="#A8741C"/></pattern>';
   overlay.appendChild(fdefs);
   const root = document.createElementNS(NS, 'g');          // artwork units -> screen pixels
   overlay.appendChild(root);

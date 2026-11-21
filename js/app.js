@@ -193,7 +193,7 @@
     line: (c, extra) => `<svg width="40" height="14" aria-hidden="true"><line x1="4" y1="7" x2="36" y2="7" stroke="#1A1A1A" stroke-width="12" stroke-linecap="round"/><line x1="4" y1="7" x2="36" y2="7" stroke="#fff" stroke-width="10" stroke-linecap="round"/><line x1="4" y1="7" x2="36" y2="7" stroke="${c}" stroke-width="6" stroke-linecap="round"/>${extra || ''}</svg>`,
     fp: (fill, stroke) => `<svg width="40" height="14" aria-hidden="true"><rect x="2" y="3" width="36" height="8" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/></svg>`,
     hatch: () => `<svg width="40" height="14" aria-hidden="true"><defs><pattern id="kHatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><rect width="5" height="5" fill="#F6DAD7"/><rect width="1.3" height="5" fill="#D46A62"/></pattern></defs><rect x="2" y="3" width="36" height="8" rx="2" fill="url(#kHatch)" stroke="#C0504A" stroke-width="1.5"/></svg>`,
-    chev: () => `<svg width="40" height="14" aria-hidden="true"><rect x="2" y="3" width="36" height="8" rx="2" fill="#F1C878"/><path d="M7 9.5l3-3 3 3M17 9.5l3-3 3 3M27 9.5l3-3 3 3" stroke="#A8741C" stroke-width="1.2" fill="none"/></svg>`
+    chev: () => `<svg width="40" height="14" aria-hidden="true"><rect x="2" y="3" width="36" height="8" rx="2" fill="#F1C878"/><circle cx="6" cy="5.5" r="1.2" fill="#A8741C"/><circle cx="12" cy="8.5" r="1.2" fill="#A8741C"/><circle cx="18" cy="5.5" r="1.2" fill="#A8741C"/><circle cx="24" cy="8.5" r="1.2" fill="#A8741C"/><circle cx="30" cy="5.5" r="1.2" fill="#A8741C"/><circle cx="35" cy="8.5" r="1.2" fill="#A8741C"/></svg>`
   };
   const KEY = {
     route: { title: 'Your route', rows: [
@@ -208,7 +208,7 @@
       ['<span class="ktag"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h5v-5h5v-5h5V5h3" stroke="#262626" stroke-width="2.5" fill="none"/></svg>7 Steps</span>', 'Steps, with the number of steps'],
       [sw.fp('#E4E3D7', '#C9C8BA'), 'Building'], [sw.fp('#D4D584', '#D4D584'), 'Lawn or green area'], [sw.fp('#C0BAB2', '#ADA79F'), 'Road']] },
     accessibility: { title: 'Accessibility layer', rows: [
-      [sw.fp('#FFFFFF', '#3F8F4A'), 'Accessible footpath (green edge)'], [sw.chev(), 'Steep footpath (chevrons)'], [sw.hatch(), 'Footpath not accessible for wheelchairs (hatched)'],
+      [sw.fp('#FFFFFF', '#3F8F4A'), 'Accessible footpath (green edge)'], [sw.chev(), 'Steep footpath (dotted)'], [sw.hatch(), 'Footpath not accessible for wheelchairs (hatched)'],
       ['<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="3" fill="#165395"/><circle cx="12" cy="6.5" r="1.6" fill="#fff"/><path d="M12 9v5h4l2 4M12 11.5h4M9.5 12.5a4.2 4.2 0 1 0 5.5 6" stroke="#fff" stroke-width="1.6" fill="none"/></svg>', 'Accessibility sign'],
       ['<span class="ktag"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h5v-5h5v-5h5V5h3" stroke="#262626" stroke-width="2.5" fill="none"/></svg>7 Steps</span>', 'Steps, with the number of steps']] },
     parking: { title: 'Parking layer', rows: [
