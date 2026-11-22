@@ -75,3 +75,7 @@ The accessibility button (top right, under the compass) opens a settings panel. 
 ## Your location
 
 When location is allowed, the blue dot shows where the phone is on the home, search and route-preview screens. If location is off, less accurate than about 60 m, or the phone is more than 2.5 km from campus, the dot shows the QR sign's spot instead. During navigation the dot snaps to the route, and an off-route warning appears when the phone is more than 25 m away from it.
+
+## Opening screen
+
+The app opens on the WayAll screen (`data/source-svg/Loading_screen.svg`) for 3 seconds: the arrow spins once and holds, then the screen fades into the map. Phones set to reduce motion skip the spin. Add `?nosplash` to the address to skip the screen while testing.

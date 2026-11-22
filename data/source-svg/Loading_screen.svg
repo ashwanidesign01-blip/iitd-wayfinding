@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.88 123.52">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: AtkinsonHyperlegibleNextVFLight-SemiBold, 'Atkinson Hyperlegible Next VF';
+        font-size: 11.83px;
+        font-variation-settings: 'wght' 600, 'ital' 0;
+        font-weight: 600;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        fill: #231f20;
+      }
+
+      .cls-4 {
+        fill: #be1e2d;
+      }
+
+      .cls-2 {
+        font-size: 5.53px;
+      }
+
+      .cls-2, .cls-3 {
+        font-family: AtkinsonHyperlegibleNextVFLight-Light, 'Atkinson Hyperlegible Next VF';
+        font-variation-settings: 'wght' 300, 'ital' 0;
+        font-weight: 300;
+      }
+
+      .cls-5 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        font-size: 2.99px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <rect class="cls-4" x="11.79" width="37.31" height="37.31" rx="4.27" ry="4.27"/>
+    <text class="cls-1" transform="translate(11.79 48.5)"><tspan x="0" y="0">WayAll</tspan></text>
+    <text class="cls-2" transform="translate(0 77.61)"><tspan x="0" y="0">Inclusive navigation app </tspan><tspan x=".65" y="6.64">for the IIT Delhi campus</tspan></text>
+    <text class="cls-3" transform="translate(27.49 110.87)"><tspan x="0" y="0">v 1.0</tspan></text>
+    <text class="cls-3" transform="translate(13.7 119.23)"><tspan x="0" y="0">Designed &amp; developed at</tspan><tspan x="5.91" y="3.59">DOD, IIT DELHI.</tspan></text>
+    <polygon class="cls-5" points="37.44 14.05 40.75 10.11 38.4 6 17.97 6 17.97 13 29.17 13 18.61 25.55 23.96 30.06 36.09 15.65 36.09 31.09 43.09 31.09 43.09 14.05 37.44 14.05"/>
+  </g>
+</svg>
