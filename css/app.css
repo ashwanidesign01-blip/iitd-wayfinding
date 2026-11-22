@@ -296,7 +296,6 @@ body[data-screen=preview] .edge{bottom:calc(var(--sheet-h) + 19px)}
 .L3c26,.L4c22{fill:url(#fpHatch)!important;stroke:#C0504A!important;stroke-width:.32px!important}
 .L3c72,.L4c72{fill:url(#fpChev)!important}
 .L3c10,.L4c10{stroke:#3F8F4A!important;stroke-width:.42px!important}
-.L3c30,.L3c31,.L3c32,.L3c33,.L3c34,.L3c35,.L3c36,.L3c37,.L3c38,.L3c39,.L4c26,.L4c27,.L4c28,.L4c29,.L4c30,.L4c31,.L4c32,.L4c33,.L4c34,.L4c35,.L4c62{stroke:#333!important;stroke-width:.35px!important}
 
 /* Figma 05 Navigating (ready for dev) */
 .navcard{left:12px;right:12px;top:calc(15px + env(safe-area-inset-top));padding:14px;gap:12px;align-items:center;border-radius:20px;background:#262626}
