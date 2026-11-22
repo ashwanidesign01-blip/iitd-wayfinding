@@ -149,9 +149,10 @@
   function setRot(b, cone) { meEl.classList.toggle('nocone', !cone); if (me.setRotation) me.setRotation(b); }
   function placeMarkers() {
     const R = S.R; rawM.remove();
-    if (!R) { pin.remove(); startDot.remove(); me.setLngLat(startLL()).addTo(map); setRot(0, false); return; }
+    if (!R) { pin.remove(); startDot.remove(); me.setLngLat(S.here || startLL()).addTo(map); setRot(0, false); return; }
     pin.setLngLat(R.ll(R.total)).addTo(map);
     if (S.screen === 'arrived') { me.remove(); startDot.remove(); return; }
+    if (S.screen !== 'nav' && S.here) { me.setLngLat(S.here).addTo(map); setRot(0, false); startDot.remove(); return; }
     me.setLngLat(R.ll(S.pos)).addTo(map); setRot(R.bearing(S.pos), S.screen === 'nav');
     if (S.screen === 'nav') startDot.setLngLat(R.ll(0)).addTo(map); else startDot.remove();
   }
@@ -166,7 +167,7 @@
       { bearing: map.getBearing(), padding: { top: 70, bottom: sheetH() + 30, left: 40, right: 76 }, duration: animate ? dur(600) : 0, maxZoom: 18 });
   }
   function camHome(animate) { const G = ALL.wheelchair, at = k => API.svgToLngLat(G.nodes[G.places[k].node]);
-    fitTo(S.from === 'lhc' ? ['lhc', 'gate', 'zanskar'].map(at) : [startLL(), at('lhc')], animate); }
+    fitTo([...(S.from === 'lhc' ? ['lhc', 'gate', 'zanskar'].map(at) : [startLL(), at('lhc')]), ...(S.here ? [S.here] : [])], animate); }
   function camRoute(animate) { const R = S.R; fitTo(R.P.filter((_, i) => i % 3 === 0).map(q => API.svgToLngLat(q.p)).concat([R.ll(R.total)]), animate); }
   function camNav(snap) {
     const R = S.R, b = S.navNorth ? 0 : R.bearing(S.pos);
@@ -459,9 +460,21 @@
   function startNav() {
     S.screen = 'nav'; S.pos = 0; S.play = false; S.follow = true; S.said = {}; S.off = 0; S.navNorth = false;
     render(); camNav(true); keepAwake(true); speak(say(S.R.man[0]));
-    if (!S.test) gpsOn(); else $('#gpsline').textContent = 'Test mode: walk is simulated.';
+    locOff(); if (!S.test) gpsOn(); else $('#gpsline').textContent = 'Test mode: walk is simulated.';
   }
-  function leaveNav() { gpsOff(); S.play = false; keepAwake(false); resetPadding(); if (backLine) backLine.style.display = 'none'; }
+  // ---- where the phone is, shown before navigation starts (during navigation the route-snapped position is used)
+  const distM = (a, b) => { const r = Math.PI / 180, x = (b[0] - a[0]) * r * Math.cos((a[1] + b[1]) / 2 * r), y = (b[1] - a[1]) * r; return Math.hypot(x, y) * 6371000; };
+  function locOn() {
+    if (S.locWatch != null || !navigator.geolocation || !window.isSecureContext) return;
+    S.locWatch = navigator.geolocation.watchPosition(p => {
+      if (p.coords.accuracy > 60) return;
+      const ll = [p.coords.longitude, p.coords.latitude];
+      S.here = distM(ll, startLL()) < 2500 ? ll : null;          // far from campus: keep showing the QR sign's spot
+      if (S.screen !== 'nav' && S.screen !== 'arrived') placeMarkers();
+    }, () => { S.here = null; if (S.screen !== 'nav') placeMarkers(); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 });
+  }
+  function locOff() { if (S.locWatch != null) navigator.geolocation.clearWatch(S.locWatch); S.locWatch = null; }
+  function leaveNav() { gpsOff(); S.play = false; if (!S.test) locOn(); keepAwake(false); resetPadding(); if (backLine) backLine.style.display = 'none'; }
   function stopNav(to) { leaveNav(); S.screen = to; render(); if (to === 'preview') camRoute(true); }
   function arrive() { leaveNav(); S.pos = S.R.total; S.screen = 'arrived'; render(); camRoute(true); }
 
@@ -533,7 +546,7 @@
     else if (a === 'play') { S.play = !S.play; if (S.play && S.pos >= S.R.total - 2) S.pos = 0; S.follow = true; t.textContent = S.play ? 'Pause' : 'Play'; }
     else if (a === 'speed') { S.mult = +t.dataset.v; document.querySelectorAll('[data-act=speed]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === S.mult))); }
     else if (a === 'voice') { S.voice = !S.voice; store.set('voice', S.voice ? '1' : '0'); $('#navcard').dataset.k = ''; updateNav(); if (S.voice) speak('Voice guidance on'); }
-    else if (a === 'recenter') { if (S.screen === 'preview') camRoute(true); else if (S.screen === 'home') { if (S.raw) map.easeTo({ center: S.raw.ll, zoom: Math.max(map.getZoom(), 17), duration: dur(600) }); else camHome(true); } else { S.follow = true; camNav(true); } }
+    else if (a === 'recenter') { if (S.screen === 'preview') camRoute(true); else if (S.screen === 'home') { const c = S.here || (S.raw && S.raw.ll); if (c) map.easeTo({ center: c, zoom: Math.max(map.getZoom(), 17), duration: dur(600) }); else camHome(true); } else { S.follow = true; camNav(true); } }
     else if (a === 'wayback') wayBack();
     else if (a === 'again') { S.pos = 0; S.screen = 'preview'; render(); camRoute(true); }
     else if (a === 'done') { home(); if (S.orient === 'drawn') map.easeTo({ bearing: drawnBearing(), duration: dur(500) }); }
@@ -578,7 +591,7 @@
   fromHash();
   render();
   applyA11y(false);
-  (function waitArt() { if (window.ARTWORK_API) applyA11y(false); else setTimeout(waitArt, 300); })();
+  (function waitArt() { if (window.ARTWORK_API) { applyA11y(false); if (!S.test) locOn(); } else setTimeout(waitArt, 300); })();
   setTimeout(() => camHome(false), 50);
   requestAnimationFrame(frame);
   window.__app = { S, buildRoute, pick, startNav, updateNav, camNav, openKey, setView, openA11y, A11Y, applyA11y };

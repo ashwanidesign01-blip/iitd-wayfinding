@@ -71,3 +71,7 @@ The accessibility button (top right, under the compass) opens a settings panel. 
 - **High contrast**: stronger outlines, darker text, bold map labels. Turns on by itself the first time if the phone's Increase Contrast setting is on.
 - **Grayscale**, **Negative contrast** (inverted colours) and **Light background** (on by default; off gives dark panels).
 - **Reset to default** restores everything. The accessibility map layer is in the Layers menu.
+
+## Your location
+
+When location is allowed, the blue dot shows where the phone is on the home, search and route-preview screens. If location is off, less accurate than about 60 m, or the phone is more than 2.5 km from campus, the dot shows the QR sign's spot instead. During navigation the dot snaps to the route, and an off-route warning appears when the phone is more than 25 m away from it.
