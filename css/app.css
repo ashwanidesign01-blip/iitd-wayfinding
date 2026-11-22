@@ -484,3 +484,5 @@ html:not(.light) .go.a11ydone{background:#FFFFFF;color:#1A1A1A}
 .srch input{width:100%}
 .seg2 button,.sheet.preview .seg2 button{font-size:calc(16px * min(var(--fz,1), 1.5))}
 .seg2 button .ic{flex:none}
+
+.navhide{display:none!important}

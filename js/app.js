@@ -348,6 +348,7 @@
   }
   let lastScreen = null;
   function render() {
+    $('#layersBtn').classList.toggle('navhide', S.screen === 'nav');   // the accessibility layer stays on while navigating
     document.body.dataset.screen = S.screen; document.body.classList.toggle('searching', S.screen === 'home' && S.homeOpen);
     const sh = $('#sheet'); sh.className = 'sheet ' + S.screen;
     $('#navcard').hidden = S.screen !== 'nav';
@@ -458,6 +459,7 @@
   let wake = null;
   async function keepAwake(on) { try { if (on && navigator.wakeLock) wake = await navigator.wakeLock.request('screen'); else if (!on && wake) { wake.release(); wake = null; } } catch (e) {} }
   function startNav() {
+    S.viewBeforeNav = S.view; if (S.view !== 'accessibility') setView('accessibility');
     S.screen = 'nav'; S.pos = 0; S.play = false; S.follow = true; S.said = {}; S.off = 0; S.navNorth = false;
     render(); camNav(true); keepAwake(true); speak(say(S.R.man[0]));
     locOff(); if (!S.test) gpsOn(); else $('#gpsline').textContent = 'Test mode: walk is simulated.';
@@ -475,7 +477,7 @@
   }
   function locOff() { if (S.locWatch != null) navigator.geolocation.clearWatch(S.locWatch); S.locWatch = null; }
   function leaveNav() { gpsOff(); S.play = false; if (!S.test) locOn(); keepAwake(false); resetPadding(); if (backLine) backLine.style.display = 'none'; }
-  function stopNav(to) { leaveNav(); S.screen = to; render(); if (to === 'preview') camRoute(true); }
+  function stopNav(to) { leaveNav(); if (S.viewBeforeNav && S.viewBeforeNav !== S.view) setView(S.viewBeforeNav); S.viewBeforeNav = null; S.screen = to; render(); if (to === 'preview') camRoute(true); }
   function arrive() { leaveNav(); S.pos = S.R.total; S.screen = 'arrived'; render(); camRoute(true); }
 
   // ---- live GPS, snapped onto the route
